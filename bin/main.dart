@@ -10,7 +10,7 @@ void main(List<String> arguments) {
 
   var imageFile1 = new IO.File('assets/test1.png').readAsBytesSync();
   Image image1 = decodeImage(imageFile1);
-  var imageFile2 = new IO.File('assets/ test2.png').readAsBytesSync();
+  var imageFile2 = new IO.File('assets/test2.png').readAsBytesSync();
   Image image2 = decodeImage(imageFile2);
 
   ImagePair pair = ImagePair(image1, image2)

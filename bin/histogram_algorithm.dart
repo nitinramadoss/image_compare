@@ -1,41 +1,29 @@
 import 'dart:collection';
+import 'dart:typed_data';
 
 import 'package:image/image.dart';
 
 import 'algorithm.dart';
 
 class HistogramAlgorithm implements Algorithm {
+  var redHist = List.filled(256, 0);
+  var blueHist = List.filled(256, 0);
+  var greenHist = List.filled(256, 0);
+
   @override
   double compare(Image src1, Image src2) {
-    Map<int, int> map1 = {};
-    Map<int, int> map2 = {};
-
-    src1.getBytes().forEach((element) {
-      if (!map1.containsKey(element)) {
-        map1[element] = 1;
-      } else {
-        map1[element] += 1;
+    for (var i = 0; i < src1.height; i++) {
+      for (var j = 0; j < src1.width; j++) {
+        int pixel = src1.getPixelSafe(i, j);
+        Uint32List list = new Uint32List.fromList([pixel]);
+        Uint8List byte_data = list.buffer.asUint8List();
+        redHist[byte_data[0]] += 1;
+        blueHist[byte_data[1]] += 1;
+        greenHist[byte_data[2]] += 1;
       }
-    });
-    src2.getBytes().forEach((element) {
-      if (!map2.containsKey(element)) {
-        map2[element] = 1;
-      } else {
-        map2[element] += 1;
-      }
-    });
-
-    print('${sortKeys(map1)}\n\n${sortKeys(map2)}');
-
-    return 1.0;
-  }
-
-  Map<int, int> sortKeys(Map<int, int> srcMap) {
-    Map<int, int> temp = {};
-    //for sorting based on keys
-    for (var i = 1; i <= 255; i++) {
-      temp[i] = srcMap.containsKey(i) ? srcMap[i] : 0;
     }
-    return temp;
+
+    print(redHist);
+    return 1;
   }
 }
