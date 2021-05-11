@@ -1,5 +1,5 @@
-name: imageComp
-description: A simple command-line application.
+name: image_compare
+description: Dart package to compare images
 # version: 1.0.0
 # homepage: https://www.example.com
 
@@ -7,7 +7,7 @@ environment:
   sdk: ">=2.10.0 <3.0.0"
 
 dependencies:
-  image: ^3.0.2
+  image: ^2.1.19
   path: ^1.7.0
 
 dev_dependencies:
