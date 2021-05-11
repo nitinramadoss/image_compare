@@ -7,12 +7,12 @@ import 'dart:io' as Io;
 void main(List<String> arguments) {
 // NOTE: Test
 
-  var imageFile1 = new Io.File('assets/test1.png').readAsBytesSync();
-  Image image1 = decodeImage(imageFile1);
-  var imageFile2 = new Io.File('assets/test2.png').readAsBytesSync();
-  Image image2 = decodeImage(imageFile2);
+  var imageFile1 = Io.File('assets/test1.png').readAsBytesSync();
+  var image1 = decodeImage(imageFile1);
+  var imageFile2 = Io.File('assets/test2.png').readAsBytesSync();
+  var image2 = decodeImage(imageFile2);
 
-  ImagePair pair = ImagePair(image1, image2)
+  var pair = ImagePair(image1, image2)
     ..setAlgorithm(HashAlgorithm())
     ..compare();
 }
