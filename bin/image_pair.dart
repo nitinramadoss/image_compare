@@ -3,30 +3,30 @@ import 'package:image/image.dart';
 import 'algorithm.dart';
 
 class ImagePair {
-  //Algorithm used for comparison
+  /// Algorithm used for comparison
   Algorithm _imageAlgo;
 
-  //Image sources
+  /// Image objects from the dart image library
   Image _src1;
   Image _src2;
 
-  //Constructor
+  /// ImagePair constructor requires [src1] and [src2] images from the dart image library
   ImagePair(Image src1, Image src2) {
     _src1 = src1;
     _src2 = src2;
   }
 
-  //sets instances spciefied algorithm
+  /// Sets concrete subclass, [algorithm], for Algorithm
   void setAlgorithm(Algorithm algorithm) {
     _imageAlgo = algorithm;
   }
 
-//calls Algorithm's compare funciton and returns result
+  /// Delegates compare request to [algorithm] object 
   double compare() {
     return _imageAlgo.compare(_src1, _src2);
   }
-
-//getters for the images set at initalization
+ 
+ /// Getters for [src1] and [src2]
   Image get image1 => _src1;
   Image get image2 => _src2;
 }
