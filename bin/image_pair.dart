@@ -26,7 +26,7 @@ class ImagePair {
     return _imageAlgo.compare(_src1, _src2);
   }
 
-//getters for the images set at init
+//getters for the images set at initalization
   Image get image1 => _src1;
   Image get image2 => _src2;
 }
