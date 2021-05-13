@@ -29,7 +29,7 @@ abstract class HistogramAlgorithm extends Algorithm {
       }
     }
 
-    var src2Total = src1.height*src1.width;
+    var src2Total = src2.height*src2.width;
 
     for (var i = 0; i < src2.height; i++) {
       for (var j = 0; j < src2.width; j++) {
