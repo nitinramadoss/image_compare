@@ -1,5 +1,6 @@
 import 'package:image/image.dart';
 
+import 'distance_algorithm.dart';
 import 'hash_algorithm.dart';
 import 'histogram_algorithm.dart';
 import 'image_pair.dart';
@@ -14,6 +15,6 @@ void main(List<String> arguments) {
   Image image2 = decodeImage(imageFile2)!;
 
   ImagePair pair = ImagePair(image1, image2)
-    ..setAlgorithm(HistogramAlgorithm());
+    ..setAlgorithm(DistanceAlgorithm());
   print(pair.compare());
 }
