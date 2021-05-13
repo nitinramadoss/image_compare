@@ -4,11 +4,11 @@ import 'algorithm.dart';
 
 class ImagePair {
   /// Algorithm used for comparison
-  Algorithm _algorithm;
+  late Algorithm _algorithm;
 
   /// Image objects from the dart image library
-  Image _src1;
-  Image _src2;
+  late Image _src1;
+  late Image _src2;
 
   /// ImagePair constructor requires [src1] and [src2] images from the dart image library
   ImagePair(Image src1, Image src2) {
