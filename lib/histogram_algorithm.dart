@@ -7,14 +7,19 @@ import 'package:meta/meta.dart';
 import 'algorithm.dart';
 
 abstract class HistogramAlgorithm extends Algorithm {
+  /// Number of bins in each histogram
+  @protected
+  final binSize = 256;
+
   /// Normalized histograms for [src1] and [src2] stored in a Tuple2
   @protected
-  var histograms = Tuple2(List.filled(256, 0.0), List.filled(256, 0.0));
+  var histograms;
 
-  /// Fills color [histograms] for child class compare operations
+  /// Fills color intensity [histograms] for child class compare operations
   @override
   double compare(Image src1, Image src2) {
-
+    histograms = Tuple2(List.filled(binSize, 0.0), List.filled(binSize, 0.0));
+    
     var src1Total = src1.height*src1.width;
 
     for (var i = 0; i < src1.height; i++) {
