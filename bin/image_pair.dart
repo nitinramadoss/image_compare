@@ -4,7 +4,7 @@ import 'algorithm.dart';
 
 class ImagePair {
   /// Algorithm used for comparison
-  Algorithm _imageAlgo;
+  Algorithm _algorithm;
 
   /// Image objects from the dart image library
   Image _src1;
@@ -18,15 +18,15 @@ class ImagePair {
 
   /// Sets concrete subclass, [algorithm], for Algorithm
   void setAlgorithm(Algorithm algorithm) {
-    _imageAlgo = algorithm;
+    _algorithm = algorithm;
   }
 
   /// Delegates compare request to [algorithm] object 
   double compare() {
-    return _imageAlgo.compare(_src1, _src2);
+    return _algorithm.compare(_src1, _src2);
   }
  
- /// Getters for [src1] and [src2]
+  /// Getters for [src1] and [src2]
   Image get image1 => _src1;
   Image get image2 => _src2;
 }
