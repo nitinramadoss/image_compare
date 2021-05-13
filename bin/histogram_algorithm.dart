@@ -5,7 +5,7 @@ import 'package:image/image.dart';
 
 import 'algorithm.dart';
 
-class HistogramAlgorithm implements Algorithm {
+class HistogramAlgorithm extends Algorithm {
   var redHist = List.filled(256, 0);
   var blueHist = List.filled(256, 0);
   var greenHist = List.filled(256, 0);
