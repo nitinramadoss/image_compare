@@ -1,29 +1,45 @@
-import 'dart:collection';
 import 'dart:typed_data';
 
 import 'package:image/image.dart';
+import 'package:tuple/tuple.dart';
 
 import 'algorithm.dart';
 
-class HistogramAlgorithm extends Algorithm {
-  var redHist = List.filled(256, 0);
-  var blueHist = List.filled(256, 0);
-  var greenHist = List.filled(256, 0);
+abstract class HistogramAlgorithm extends Algorithm {
+  // Map string to Tuple2(List, List)
+  final _histograms = {};
 
+  /// Initializes [histograms] for child class compare operations
   @override
   double compare(Image src1, Image src2) {
+    _histograms['red'] = Tuple2(List.filled(256, 0), List.filled(256, 0));
+    _histograms['blue'] = Tuple2(List.filled(256, 0), List.filled(256, 0));
+    _histograms['green'] = Tuple2(List.filled(256, 0), List.filled(256, 0));
+
     for (var i = 0; i < src1.height; i++) {
       for (var j = 0; j < src1.width; j++) {
-        int pixel = src1.getPixelSafe(i, j);
-        Uint32List list = new Uint32List.fromList([pixel]);
-        Uint8List byte_data = list.buffer.asUint8List();
-        redHist[byte_data[0]] += 1;
-        blueHist[byte_data[1]] += 1;
-        greenHist[byte_data[2]] += 1;
+        var pixel = src1.getPixelSafe(i, j);
+        var list = Uint32List.fromList([pixel]);
+        var byte_data = list.buffer.asUint8List();
+
+        _histograms['red'].item1[byte_data[0]] += 1;
+        _histograms['blue'].item1[byte_data[1]] += 1;
+        _histograms['green'].item1[byte_data[2]] += 1;      
       }
     }
 
-    print(redHist);
-    return 1;
+     for (var i = 0; i < src2.height; i++) {
+      for (var j = 0; j < src2.width; j++) {
+        var pixel = src2.getPixelSafe(i, j);
+        var list = Uint32List.fromList([pixel]);
+        var byte_data = list.buffer.asUint8List();
+
+        _histograms['red'].item2[byte_data[0]] += 1;
+        _histograms['blue'].item2[byte_data[1]] += 1;
+        _histograms['green'].item2[byte_data[2]] += 1;      
+      }
+    }
+    
+    return 0.0; // default return
   }
 }
