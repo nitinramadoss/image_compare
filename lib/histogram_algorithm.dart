@@ -15,7 +15,7 @@ abstract class HistogramAlgorithm extends Algorithm {
   @protected
   var _histograms;
 
-  /// Default constructor gets implicitly called on sublass instantiation
+  /// Default constructor gets implicitly called on subclass instantiation
   HistogramAlgorithm() {
     _binSize = 256;
     _histograms = Tuple2(List.filled(_binSize, 0.0), List.filled(_binSize, 0.0));
@@ -77,3 +77,4 @@ class ChiSquareHistogramAlgorithm extends HistogramAlgorithm {
     return sum;
   }
 }
+
