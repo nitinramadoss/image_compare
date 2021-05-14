@@ -21,7 +21,7 @@ abstract class HistogramAlgorithm extends Algorithm {
     _histograms = Tuple2(List.filled(_binSize, 0.0), List.filled(_binSize, 0.0));
   }
 
-  /// Fills color intensity [histograms] for child class compare operations
+  /// Fills color intensity histograms for child class compare operations
   @override
   double compare(Image src1, Image src2) {    
     var src1Total = src1.height*src1.width;
@@ -58,15 +58,14 @@ abstract class HistogramAlgorithm extends Algorithm {
 
 class ChiSquareHistogramAlgorithm extends HistogramAlgorithm {
   
+  /// Calculates histogram similarity using chi-squared distance
   @override
   double compare(Image src1, Image src2) {
     // Delegates histogram initialization to parent
     super.compare(src1, src2);
 
-    var binSize = _binSize;
-
     var sum = 0.0;
-    for (var i = 0; i < binSize; i++) {
+    for (var i = 0; i < _binSize; i++) {
       var count1 = _histograms.item1[i];
       var count2 = _histograms.item2[i];
 
