@@ -75,7 +75,7 @@ class ChiSquareHistogramAlgorithm extends HistogramAlgorithm {
     }
     sum *= 0.5;
 
-    return sum;
+    return sum; 
   }
 }
 
