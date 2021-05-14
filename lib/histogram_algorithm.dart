@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:image/image.dart';
@@ -69,9 +70,30 @@ class ChiSquareHistogramAlgorithm extends HistogramAlgorithm {
       var count1 = _histograms.item1[i];
       var count2 = _histograms.item2[i];
 
-      sum += ((count1-count2) * (count1-count2)) / (count1 + count2);
+      sum += (count1 + count2 != 0)? 
+        ((count1-count2) * (count1-count2)) / (count1 + count2) : 0;
     }
     sum *= 0.5;
+
+    return sum;
+  }
+}
+
+class IntersectionHistogramAlgorithm extends HistogramAlgorithm {
+  
+  /// Calculates histogram similarity using standard intersection
+  @override
+  double compare(Image src1, Image src2) {
+    // Delegates histogram initialization to parent
+    super.compare(src1, src2);
+
+    var sum = 0.0;
+    for (var i = 0; i < _binSize; i++) {
+      var count1 = _histograms.item1[i];
+      var count2 = _histograms.item2[i];
+
+      sum += min(count1, count2);
+    }
 
     return sum;
   }
