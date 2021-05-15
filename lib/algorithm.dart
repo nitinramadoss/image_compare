@@ -90,31 +90,19 @@ abstract class HistogramAlgorithm extends Algorithm {
     // Number of pixels in [src1]
     var src1Total = src1.height*src1.width;
 
-    for (var i = 0; i < src1.height; i++) {
-      for (var j = 0; j < src1.width; j++) {
-        var pixel = src1.getPixelSafe(i, j);
-        var list = Uint32List.fromList([pixel]);
-        var byte_data = list.buffer.asUint8List();
-
-        _histograms.item1[byte_data[0]] += 1/src1Total;
-        _histograms.item1[byte_data[1]] += 1/src1Total;
-        _histograms.item1[byte_data[2]] += 1/src1Total;     
-      }
+    for (Pixel pixel in _pixelListPair.item1) {
+      _histograms.item1[pixel._red] += 1/src1Total;
+      _histograms.item1[pixel._blue] += 1/src1Total;
+      _histograms.item1[pixel._green] += 1/src1Total;   
     }
 
     // Number of pixels in [src2]
     var src2Total = src2.height*src2.width;
 
-    for (var i = 0; i < src2.height; i++) {
-      for (var j = 0; j < src2.width; j++) {
-        var pixel = src2.getPixelSafe(i, j);
-        var list = Uint32List.fromList([pixel]);
-        var byte_data = list.buffer.asUint8List();
-
-        _histograms.item2[byte_data[0]] += 1/src2Total;
-        _histograms.item2[byte_data[1]] += 1/src2Total;
-        _histograms.item2[byte_data[2]] += 1/src2Total;      
-      }
+    for (Pixel pixel in _pixelListPair.item2) {
+      _histograms.item2[pixel._red] += 1/src2Total;
+      _histograms.item2[pixel._blue] += 1/src2Total;
+      _histograms.item2[pixel._green] += 1/src2Total;   
     }
     
     return 0.0; // default return
