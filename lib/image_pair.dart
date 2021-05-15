@@ -6,8 +6,10 @@ class ImagePair {
   /// Algorithm used for comparison
   late Algorithm _algorithm;
 
-  /// Image objects from the dart image library
+  /// Image object from the dart image library
   late Image _src1;
+
+  /// Image object from the dart image library
   late Image _src2;
 
   /// ImagePair constructor requires [src1] and [src2] images from the dart image library
