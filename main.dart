@@ -1,6 +1,6 @@
 import 'package:image/image.dart';
 
-import 'lib/algorithm.dart';
+import 'lib/algorithms.dart';
 import 'lib/image_pair.dart';
 import 'dart:io' as IO;
 
@@ -13,6 +13,6 @@ void main(List<String> arguments) {
   var image2 = decodeImage(imageFile2)!;
 
   var pair = ImagePair(image1, image2)
-    ..setAlgorithm(DistanceAlgorithm());
+    ..setAlgorithm(ChiSquareHistogramAlgorithm());
   print(pair.compare());
 }
