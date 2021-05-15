@@ -1,6 +1,6 @@
 import 'package:image/image.dart';
 
-import 'algorithm.dart';
+import 'algorithms.dart';
 
 class ImagePair {
   /// Algorithm used for comparison
