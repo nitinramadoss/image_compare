@@ -71,7 +71,7 @@ abstract class HistogramAlgorithm extends Algorithm {
   @protected
   var _binSize;
 
-  /// Normalized histograms for [src1] and [src2] stored in a Tuple2
+  /// Histograms for [src1] and [src2] stored in a Tuple2
   @protected
   var _histograms;
 
@@ -87,22 +87,16 @@ abstract class HistogramAlgorithm extends Algorithm {
     // Delegates pixel extraction to parent
     super.compare(src1, src2);
 
-    // Number of pixels in [src1]
-    var src1Total = src1.height*src1.width;
-
     for (Pixel pixel in _pixelListPair.item1) {
-      _histograms.item1[pixel._red] += 1/src1Total;
-      _histograms.item1[pixel._blue] += 1/src1Total;
-      _histograms.item1[pixel._green] += 1/src1Total;   
+      _histograms.item1[pixel._red] += 1;
+      _histograms.item1[pixel._blue] += 1;
+      _histograms.item1[pixel._green] += 1;   
     }
 
-    // Number of pixels in [src2]
-    var src2Total = src2.height*src2.width;
-
     for (Pixel pixel in _pixelListPair.item2) {
-      _histograms.item2[pixel._red] += 1/src2Total;
-      _histograms.item2[pixel._blue] += 1/src2Total;
-      _histograms.item2[pixel._green] += 1/src2Total;   
+      _histograms.item2[pixel._red] += 1;
+      _histograms.item2[pixel._blue] += 1;
+      _histograms.item2[pixel._green] += 1;   
     }
     
     return 0.0; // default return
@@ -149,7 +143,7 @@ class IntersectionHistogramAlgorithm extends HistogramAlgorithm {
       sum += min(count1, count2);
     }
 
-    return sum;
+    return sum / (src2.width * src2.height); // percentage of [src2] that matches [src1]
   }
 }
 
