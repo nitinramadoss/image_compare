@@ -23,11 +23,11 @@ abstract class Algorithm {
     var bytes1 = src1.getBytes(format: Format.rgb);
     var bytes2 = src2.getBytes(format: Format.rgb);
 
-    for (var i = 0; i < bytes1.length-3; i+=3) {
+    for (var i = 0; i <= bytes1.length-3; i+=3) {
       _pixelListPair.item1.add(Pixel(bytes1[i], bytes1[i+1], bytes1[i+2])); 
     }
 
-    for (var i = 0; i < bytes2.length-3; i+=3) {
+    for (var i = 0; i <= bytes2.length-3; i+=3) {
       _pixelListPair.item2.add(Pixel(bytes2[i], bytes2[i+1], bytes2[i+2])); 
     }
 
