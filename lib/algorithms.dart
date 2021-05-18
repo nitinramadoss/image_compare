@@ -113,8 +113,8 @@ class ChiSquareHistogramAlgorithm extends HistogramAlgorithm {
 
     var sum = 0.0;
     for (var i = 0; i < _binSize; i++) {
-      var count1 = _histograms.item1[i];
-      var count2 = _histograms.item2[i];
+      var count1 = _histograms.item1[i] / (src1.width * src1.height);
+      var count2 = _histograms.item2[i] / (src2.width * src2.height);
 
       sum += (count1 + count2 != 0)? 
         ((count1-count2) * (count1-count2)) / (count1 + count2) : 0;
