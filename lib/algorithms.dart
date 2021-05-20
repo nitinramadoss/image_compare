@@ -43,7 +43,7 @@ class Pixel {
 }
 
 /// Algorithm class for comparing images with euclidean distance
-class DistanceAlgorithm extends Algorithm {
+abstract class DistanceAlgorithm extends Algorithm {
 
   /// Resizes images if dimensions do not match.
   /// If different sizes, larger image will be 
