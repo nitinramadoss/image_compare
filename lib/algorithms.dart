@@ -44,8 +44,24 @@ class Pixel {
 
 /// Algorithm class for comparing images with euclidean distance
 class DistanceAlgorithm extends Algorithm {
+
+  /// Resizes images if dimensions do not match.
+  /// If different sizes, larger image will be 
+  /// resized to the smaller image
   @override
   double compare(Image src1, Image src2) {
+    if (src1.width != src2.width && 
+        src1.height != src2.height) {
+      var size1 = src1.width * src1.height;
+      var size2 = src2.width * src2.height;
+
+      if (size1 < size2) {
+        src2 = copyResize(src2, height: src1.height, width: src1.width);
+      } else {
+        src1 = copyResize(src1, height: src2.height, width: src2.width);
+      }
+    }
+
     // Delegates pixel extraction to parent
     super.compare(src1, src2);
 
@@ -83,7 +99,6 @@ class Average_Hash extends HashAlgorithm {
   /// Calculates average hash of [src1] and [src2], returns hamming distance
   @override
   double compare(Image src1, Image src2) {
-
     // Delegates image resizing to parent
     super.compare(src1, src2);
    
