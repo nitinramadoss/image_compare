@@ -66,7 +66,7 @@ abstract class HashAlgorithm extends Algorithm {
     // Delegates pixel extraction to parent
     super.compare(src1, src2);
 
-    return 1;
+    return 0.0; //default return
   }
 
   double hamming_distance(String str1, String str2) {
@@ -85,7 +85,7 @@ class Average_Hash extends HashAlgorithm {
   @override
   double compare(Image src1, Image src2) {
 
-    // Delegates histogram initialization to parent
+    // Delegates image resizing to parent
     super.compare(src1, src2);
    
     var hash1 = average_hash_algo(_pixelListPair.item1);
