@@ -56,11 +56,16 @@ class DistanceAlgorithm extends Algorithm {
 
 /// Algorithm class for comparing images with hashing
 abstract class HashAlgorithm extends Algorithm {
+
+  /// Resizes images to same dimension
   @override
   double compare(Image src1, Image src2) {
     src1 = copyResize(grayscale(src1), height: 8, width: 8);
     src2 = copyResize(grayscale(src2), height: 8, width: 8);
+
+    // Delegates pixel extraction to parent
     super.compare(src1, src2);
+
     return 1;
   }
 
@@ -73,18 +78,24 @@ abstract class HashAlgorithm extends Algorithm {
   }
 }
 
+/// Algorithm class for comparing images with average hash
 class Average_Hash extends HashAlgorithm {
+
+  /// Calculates average hash of [src1] and [src2], returns hamming distance
   @override
   double compare(Image src1, Image src2) {
+
     // Delegates histogram initialization to parent
     super.compare(src1, src2);
-    print(_pixelListPair.item1.length);
+   
     var hash1 = average_hash_algo(_pixelListPair.item1);
     var hash2 = average_hash_algo(_pixelListPair.item2);
 
+    // Delegates hamming distance computation to parent
     return super.hamming_distance(hash1, hash2);
   }
 
+  /// Computes average hash string for an image
   String average_hash_algo(List pixel_list) {
     var src_array = pixel_list.map((e) => e._red).toList();
 
@@ -98,6 +109,7 @@ class Average_Hash extends HashAlgorithm {
     src_array.forEach((element) {
       bit_string += (1 * element).toString();
     });
+
     return BigInt.parse(bit_string, radix: 2).toRadixString(16);
   }
 }
