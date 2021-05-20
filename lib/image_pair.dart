@@ -23,7 +23,7 @@ class ImagePair {
     _algorithm = algorithm;
   }
 
-  /// Delegates compare request to [algorithm] object 
+  /// Forwards compare request to [algorithm] object 
   double compare() {
     return _algorithm.compare(_src1, _src2);
   }

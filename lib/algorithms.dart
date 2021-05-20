@@ -69,6 +69,29 @@ abstract class DistanceAlgorithm extends Algorithm {
   }
 }
 
+/// Algorithm class for comparing images with euclidean color distance
+class EuclideanColorDistanceAlgorithm extends DistanceAlgorithm {
+
+  /// Computes euclidean color distance between two images
+  /// of the same size
+  @override
+  double compare(Image src1, Image src2) {
+    // Delegates image resizing to parent
+    super.compare(src1, src2);
+
+    var sum = 0.0;
+
+    var numPixels = src1.width * src1.height;
+    for (var i = 0; i < numPixels; i++) {
+      sum += sqrt(pow((_pixelListPair.item1[i]._red - _pixelListPair.item2[i]._red) / 255, 2) +
+                  pow((_pixelListPair.item1[i]._blue - _pixelListPair.item2[i]._blue) / 255, 2) +
+                  pow((_pixelListPair.item1[i]._green - _pixelListPair.item2[i]._green) / 255, 2));
+    }
+
+    return sum;
+  }
+}
+
 /// Algorithm class for comparing images with hashing
 abstract class HashAlgorithm extends Algorithm {
 
