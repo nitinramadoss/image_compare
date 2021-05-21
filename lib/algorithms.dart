@@ -42,7 +42,7 @@ class Pixel {
   Pixel(this._red, this._blue, this._green);
 }
 
-/// Algorithm class for comparing images with euclidean distance
+/// Algorithm class for comparing images pixel-by-pixel
 abstract class DirectAlgorithm extends Algorithm {
 
   /// Resizes images if dimensions do not match.
@@ -89,6 +89,38 @@ class EuclideanColorDistanceAlgorithm extends DirectAlgorithm {
     }
 
     return sum;
+  }
+}
+
+class PixelMatchingAlgorithm extends DirectAlgorithm {
+
+  /// Computes percentage of [src1] that is similar to [src2].
+  /// Return value is the fraction similarity e.g. 0.1 means 10%
+  @override
+  double compare(Image src1, Image src2) {
+    // Delegates image resizing to parent
+    super.compare(src1, src2);
+
+    var count = 0;
+    // percentage leniency for pixel comparison
+    var delta = 0.05 * 256;
+    
+    var numPixels = src1.width * src1.height;
+
+    for (var i = 0; i < numPixels; i++) {
+      if (_withinRange(delta, _pixelListPair.item1[i]._red, _pixelListPair.item2[i]._red) &&
+          _withinRange(delta, _pixelListPair.item1[i]._blue, _pixelListPair.item2[i]._blue) &&
+          _withinRange(delta, _pixelListPair.item1[i]._green, _pixelListPair.item2[i]._green)) {
+        
+        count++;
+      }
+    }
+
+    return count / numPixels; // fraction similarity
+  }
+
+  bool _withinRange(var delta, var value, var target) {
+    return (target - delta < value && value < target + delta);
   }
 }
 
@@ -191,6 +223,14 @@ abstract class HistogramAlgorithm extends Algorithm {
 }
 
 /// Algorithm class for comparing images with chi-square histogram intersections
+/// 
+/// Images are converted to histogram representations (x-axis intensity, y-axis frequency).
+/// The chi-square distance formula is applied to compute the distance between each bin:
+/// 
+/// 0.5* sum((binCount1 - binCount2)^2 / (binCount1 + binCount2))
+/// 
+/// Number of histograms bins is 256. Frequencies for RGB intensities are counted in
+/// one histogram representation.
 class ChiSquareHistogramAlgorithm extends HistogramAlgorithm {
   /// Calculates histogram similarity using chi-squared distance
   @override
@@ -213,7 +253,16 @@ class ChiSquareHistogramAlgorithm extends HistogramAlgorithm {
   }
 }
 
-/// Algorithm class for comparing images with standard histogram intersections
+/// Algorithm class for comparing images with standard histogram intersection.
+/// 
+/// Images are converted to histogram representations (x-axis intensity, y-axis frequency).
+/// Generated histograms are overlayed to examine percentage overlap, thereby indicating
+/// percentage similarity in pixel intensity frequencies:
+/// 
+/// sum(min(binCount1, binCount2))
+/// 
+/// Number of histograms bins is 256. Frequencies for RGB intensities are counted in
+/// one histogram representation.
 class IntersectionHistogramAlgorithm extends HistogramAlgorithm {
   /// Calculates histogram similarity using standard intersection
   @override
