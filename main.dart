@@ -12,6 +12,7 @@ void main(List<String> arguments) {
   var imageFile2 = IO.File('koala2.jpg').readAsBytesSync();
   var image2 = decodeImage(imageFile2)!;
 
-  var pair = ImagePair(image1, image2)..setAlgorithm(Average_Hash());
+  var pair = ImagePair(image1, image2)
+    ..setAlgorithm(ChiSquareHistogramAlgorithm());
   print(pair.compare());
 }

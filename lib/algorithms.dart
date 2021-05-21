@@ -78,7 +78,6 @@ class Average_Hash extends HashAlgorithm {
   double compare(Image src1, Image src2) {
     // Delegates histogram initialization to parent
     super.compare(src1, src2);
-    print(_pixelListPair.item1.length);
     var hash1 = average_hash_algo(_pixelListPair.item1);
     var hash2 = average_hash_algo(_pixelListPair.item2);
 
