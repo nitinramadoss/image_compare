@@ -7,12 +7,11 @@ import 'dart:io' as IO;
 void main(List<String> arguments) {
 // NOTE: Test
 
-  var imageFile1 = IO.File('test2.png').readAsBytesSync();
+  var imageFile1 = IO.File('koala1.jpg').readAsBytesSync();
   var image1 = decodeImage(imageFile1)!;
-  var imageFile2 = IO.File('koala1.jpg').readAsBytesSync();
+  var imageFile2 = IO.File('koala2.jpg').readAsBytesSync();
   var image2 = decodeImage(imageFile2)!;
 
-  var pair = ImagePair(image1, image2)
-    ..setAlgorithm(ChiSquareHistogramAlgorithm());
+  var pair = ImagePair(image1, image2)..setAlgorithm(MedianHash());
   print(pair.compare());
 }

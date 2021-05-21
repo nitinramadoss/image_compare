@@ -58,8 +58,8 @@ abstract class HashAlgorithm extends Algorithm {
   /// Resizes images to same dimension
   @override
   double compare(Image src1, Image src2) {
-    src1 = copyResize(grayscale(src1), height: 8, width: 8);
-    src2 = copyResize(grayscale(src2), height: 8, width: 8);
+    src1 = copyResize(grayscale(src1), height: 9, width: 8);
+    src2 = copyResize(grayscale(src2), height: 9, width: 8);
 
     // Delegates pixel extraction to parent
     super.compare(src1, src2);
@@ -72,27 +72,23 @@ abstract class HashAlgorithm extends Algorithm {
     for (var i = 0; i < str1.length; i++) {
       dist_counter += str1[i] != str2[i] ? 1 : 0;
     }
-    return pow((dist_counter / str1.length), 2) * 100;
+    return dist_counter.toDouble();
   }
 }
 
-/// Algorithm class for comparing images with average hash
-class Average_Hash extends HashAlgorithm {
-  /// Calculates average hash of [src1] and [src2], returns hamming distance
+/// Abstract class for all hash algorithms
+class AverageHash extends HashAlgorithm {
   @override
   double compare(Image src1, Image src2) {
-    // Delegates image resizing to parent
+    //delegates pixel list generation to parent
     super.compare(src1, src2);
+    var hash1 = calcAvg(_pixelListPair.item1);
+    var hash2 = calcAvg(_pixelListPair.item2);
 
-    var hash1 = average_hash_algo(_pixelListPair.item1);
-    var hash2 = average_hash_algo(_pixelListPair.item2);
-
-    // Delegates hamming distance computation to parent
     return super.hamming_distance(hash1, hash2);
   }
 
-  /// Computes average hash string for an image
-  String average_hash_algo(List pixel_list) {
+  String calcAvg(List pixel_list) {
     var src_array = pixel_list.map((e) => e._red).toList();
 
     var bit_string = '';
@@ -100,6 +96,39 @@ class Average_Hash extends HashAlgorithm {
     var mean = (src_array.reduce((a, b) => a + b) / src_array.length);
     src_array.asMap().forEach((key, value) {
       src_array[key] = value > mean ? 1 : 0;
+    });
+
+    src_array.forEach((element) {
+      bit_string += (1 * element).toString();
+    });
+    return BigInt.parse(bit_string, radix: 2).toRadixString(16);
+  }
+}
+
+class MedianHash extends HashAlgorithm {
+  @override
+  double compare(Image src1, Image src2) {
+    // Delegates image resizing to parent
+    super.compare(src1, src2);
+
+    var hash1 = calcMedian(_pixelListPair.item1);
+    var hash2 = calcMedian(_pixelListPair.item2);
+
+    // Delegates hamming distance computation to parent
+    return super.hamming_distance(hash1, hash2);
+  }
+
+  /// Computes average hash string for an image
+  String calcMedian(List pixel_list) {
+    var src_array = pixel_list.map((e) => e._red).toList();
+    var tempArr = List.from(src_array);
+    var bit_string = '';
+    tempArr.sort((a, b) => a.compareTo(b));
+    var median = (tempArr[((tempArr.length - 1) / 2).floor()] +
+            tempArr[((tempArr.length - 1) / 2).floor() + 1]) /
+        2;
+    src_array.asMap().forEach((key, value) {
+      src_array[key] = value > median ? 1 : 0;
     });
 
     src_array.forEach((element) {
