@@ -43,7 +43,7 @@ class Pixel {
 }
 
 /// Algorithm class for comparing images with euclidean distance
-abstract class DistanceAlgorithm extends Algorithm {
+abstract class DirectAlgorithm extends Algorithm {
 
   /// Resizes images if dimensions do not match.
   /// If different sizes, larger image will be 
@@ -70,7 +70,7 @@ abstract class DistanceAlgorithm extends Algorithm {
 }
 
 /// Algorithm class for comparing images with euclidean color distance
-class EuclideanColorDistanceAlgorithm extends DistanceAlgorithm {
+class EuclideanColorDistanceAlgorithm extends DirectAlgorithm {
 
   /// Computes euclidean color distance between two images
   /// of the same size
