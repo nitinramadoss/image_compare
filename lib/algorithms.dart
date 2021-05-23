@@ -94,7 +94,7 @@ class EuclideanColorDistanceAlgorithm extends DirectAlgorithm {
 
 class PixelMatchingAlgorithm extends DirectAlgorithm {
 
-  /// Computes percentage of [src1] that is similar to [src2].
+  /// Computes overlap between two images's color intensities.
   /// Return value is the fraction similarity e.g. 0.1 means 10%
   @override
   double compare(Image src1, Image src2) {
@@ -104,7 +104,7 @@ class PixelMatchingAlgorithm extends DirectAlgorithm {
     var count = 0;
     // percentage leniency for pixel comparison
     var delta = 0.05 * 256;
-    
+
     var numPixels = src1.width * src1.height;
 
     for (var i = 0; i < numPixels; i++) {
@@ -121,6 +121,50 @@ class PixelMatchingAlgorithm extends DirectAlgorithm {
 
   bool _withinRange(var delta, var value, var target) {
     return (target - delta < value && value < target + delta);
+  }
+}
+
+class IMEDAlgorithm extends DirectAlgorithm {
+
+  /// Computes distance between two images
+  /// using image euclidean distance
+  @override
+  double compare(Image src1, Image src2) {
+    // Delegates image resizing to parent
+    super.compare(src1, src2);
+
+    var sum = 0.0;
+
+    for (var i = 0; i < _pixelListPair.item1.length; i++) {
+      for (var j = 0; j < _pixelListPair.item1.length; j++) {
+        var x = _pixelListPair.item1; // src1 pixel list
+        var y = _pixelListPair.item2; // src2 pixel list
+        
+        sum += exp(-pow(_distance(i, j, src1.width), 2) / 2) * 
+               (_grayValue(x[i]) - _grayValue(y[i])) / 255 *
+               (_grayValue(x[j]) - _grayValue(y[j])) / 255;
+      }
+    }
+
+    return sum * (1 / (2 * pi));
+  }
+
+  /// Helper function to return grayscale value of a pixel
+  int _grayValue(Pixel p) {
+    return getLuminanceRgb(p._red, p._green, p._blue);
+  }
+
+  /// Helper function to return distance between two pixels at 
+  /// indices [i] and [j]
+  double _distance(var i, var j, var width) {
+    var distance = 0.0;
+    var pointA = Tuple2((i % width), (i / width));
+    var pointB = Tuple2((j % width), (j / width));
+
+    distance = sqrt(pow(pointB.item1 - pointA.item1, 2) + 
+                    pow(pointB.item2 - pointA.item2, 2));
+
+    return distance;
   }
 }
 
