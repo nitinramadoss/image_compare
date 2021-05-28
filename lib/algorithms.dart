@@ -134,19 +134,33 @@ class IMEDAlgorithm extends DirectAlgorithm {
     super.compare(src1, src2);
 
     var sum = 0.0;
+    final SRC_PERCENTAGE = 0.01;
+    final sigma = SRC_PERCENTAGE * src1.width;
 
     for (var i = 0; i < _pixelListPair.item1.length; i++) {
-      for (var j = 0; j < _pixelListPair.item1.length; j++) {
+      var offset = (sigma).ceil();
+      var len = 1 + offset * 2;
+
+      var start = (i - offset) - (src1.width * offset);
+
+      for (var j = start; j <= (i + offset) + (src1.width * offset); j++) {
         var x = _pixelListPair.item1; // src1 pixel list
         var y = _pixelListPair.item2; // src2 pixel list
         
-        sum += exp(-pow(_distance(i, j, src1.width), 2) / 2) * 
-               (_grayValue(x[i]) - _grayValue(y[i])) / 255 *
-               (_grayValue(x[j]) - _grayValue(y[j])) / 255;
+        if (j >= 0 && j < y.length) {
+          sum += exp(-pow(_distance(i, j, src1.width), 2) / 2 * pow(sigma, 2)) * 
+                (_grayValue(x[i]) - _grayValue(y[i])) / 255 *
+                (_grayValue(x[j]) - _grayValue(y[j])) / 255;
+        }
+
+        if (j == (start + len)) {
+          j = start + src1.width;
+          start = j;
+        }
       }
     }
 
-    return sum * (1 / (2 * pi));
+    return sum * (1 / (2 * pi * pow(sigma, 2)));
   }
 
   /// Helper function to return grayscale value of a pixel
