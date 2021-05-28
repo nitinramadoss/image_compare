@@ -265,15 +265,13 @@ abstract class HistogramAlgorithm extends Algorithm {
     super.compare(src1, src2);
 
     for (Pixel pixel in _pixelListPair.item1) {
-      _histograms.item1[pixel._red] += 1;
-      _histograms.item1[pixel._blue] += 1;
-      _histograms.item1[pixel._green] += 1;
+      var grayValue = getLuminanceRgb(pixel._red, pixel._green, pixel._blue);
+      _histograms.item1[grayValue] += 1;
     }
 
     for (Pixel pixel in _pixelListPair.item2) {
-      _histograms.item2[pixel._red] += 1;
-      _histograms.item2[pixel._blue] += 1;
-      _histograms.item2[pixel._green] += 1;
+      var grayValue = getLuminanceRgb(pixel._red, pixel._green, pixel._blue);
+      _histograms.item2[grayValue] += 1;
     }
 
     return 0.0; // default return
