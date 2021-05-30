@@ -65,7 +65,8 @@ abstract class Algorithm {
   }
 }
 
-/// Organizational class for storing [src1] and [src2] data
+/// Organizational class for storing [src1] and [src2] data.
+/// Fields are RGB values
 class Pixel {
   final int _red;
   final int _blue;
@@ -279,15 +280,14 @@ abstract class HistogramAlgorithm extends Algorithm {
   @protected
   var _binSize;
 
-  /// Histograms for [src1] and [src2] stored in a Tuple2
+  /// Normalized histograms for [src1] and [src2] stored in a Tuple2
   @protected
   var _histograms;
 
   /// Default constructor gets implicitly called on subclass instantiation
   HistogramAlgorithm() {
     _binSize = 256;
-    _histograms =
-        Tuple2(List.filled(_binSize, 0.0), List.filled(_binSize, 0.0));
+    _histograms = Tuple2(RGBHistogram(_binSize), RGBHistogram(_binSize));
   }
 
   /// Fills color intensity histograms for child class compare operations
@@ -296,17 +296,37 @@ abstract class HistogramAlgorithm extends Algorithm {
     // Delegates pixel extraction to parent
     super.compare(src1, src2);
 
+    final src1Size = src1.width * src1.height;
+    final src2Size = src2.width * src2.height;
+
     for (Pixel pixel in _pixelListPair.item1) {
-      var grayValue = getLuminanceRgb(pixel._red, pixel._green, pixel._blue);
-      _histograms.item1[grayValue] += 1;
+      _histograms.item1.redHist[pixel._red] += 1 / src1Size;
+      _histograms.item1.greenHist[pixel._green] += 1 / src1Size;
+      _histograms.item1.blueHist[pixel._blue] += 1 / src1Size;
     }
 
     for (Pixel pixel in _pixelListPair.item2) {
-      var grayValue = getLuminanceRgb(pixel._red, pixel._green, pixel._blue);
-      _histograms.item2[grayValue] += 1;
+      _histograms.item2.redHist[pixel._red] += 1 / src2Size;
+      _histograms.item2.greenHist[pixel._green] += 1 / src2Size;
+      _histograms.item2.blueHist[pixel._blue] += 1 / src2Size;
     }
 
     return 0.0; // default return
+  }
+}
+
+/// Organizational class for storing [src1] and [src2] data.
+/// Fields are RGB histograms (256 element lists)
+class RGBHistogram {
+  final _binSize;
+  late List redHist; 
+  late List greenHist; 
+  late List blueHist;
+
+  RGBHistogram(this._binSize) {
+    redHist = List.filled(_binSize, 0.0); 
+    greenHist = List.filled(_binSize, 0.0); 
+    blueHist = List.filled(_binSize, 0.0); 
   }
 }
 
@@ -327,17 +347,27 @@ class ChiSquareHistogramAlgorithm extends HistogramAlgorithm {
     super.compare(src1, src2);
 
     var sum = 0.0;
+
+    sum += _diff(_histograms.item1.redHist, _histograms.item2.redHist);
+    sum += _diff(_histograms.item1.greenHist, _histograms.item2.greenHist);
+    sum += _diff(_histograms.item1.blueHist, _histograms.item2.blueHist);
+
+    return sum / 3;
+  }
+
+  double _diff( List src1Hist, List src2Hist) {
+    var sum = 0.0;
+
     for (var i = 0; i < _binSize; i++) {
-      var count1 = _histograms.item1[i] / (src1.width * src1.height);
-      var count2 = _histograms.item2[i] / (src2.width * src2.height);
+      var count1 = src1Hist[i];
+      var count2 = src2Hist[i];
 
       sum += (count1 + count2 != 0)
           ? ((count1 - count2) * (count1 - count2)) / (count1 + count2)
           : 0;
     }
-    sum *= 0.5;
 
-    return sum;
+    return sum * 0.5;
   }
 }
 
