@@ -121,7 +121,7 @@ class EuclideanColorDistanceAlgorithm extends DirectAlgorithm {
                   pow((_pixelListPair.item1[i]._green - _pixelListPair.item2[i]._green) / 255, 2));
     }
 
-    return sum;
+    return sum / (numPixels * sqrt(3));
   }
 }
 
@@ -169,11 +169,10 @@ class IMEDAlgorithm extends DirectAlgorithm {
     var sum = 0.0;
     final SRC_PERCENTAGE = 0.01;
     final sigma = SRC_PERCENTAGE * src1.width;
+    final offset = (sigma).ceil();
+    final len = 1 + offset * 2;
 
     for (var i = 0; i < _pixelListPair.item1.length; i++) {
-      var offset = (sigma).ceil();
-      var len = 1 + offset * 2;
-
       var start = (i - offset) - (src1.width * offset);
 
       for (var j = start; j <= (i + offset) + (src1.width * offset); j++) {
