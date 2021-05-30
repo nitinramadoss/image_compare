@@ -102,7 +102,18 @@ abstract class DirectAlgorithm extends Algorithm {
   }
 }
 
-/// Algorithm class for comparing images with euclidean color distance
+/// Algorithm class for comparing images with euclidean distance.
+/// 
+/// Images are resized to the same dimensions (if dimensions don't match)
+/// and euclidean difference between [src1] RGB values and [src2] RGB values 
+/// for each pixel is summed. 
+/// 
+/// sum(sqrt(([src1[i].red - [src2[i].red)^2 + ([src1[i].blue - [src2[i].blue)^2 +
+/// ([src1[i].green - [src2[i].green)^2)
+/// 
+/// * Best with images of similar aspect ratios and dimensions
+/// * Compare for exactness (if two images are identical)
+/// * Returns percentage difference (0.0 - no difference, 1.0 - 100% difference)
 class EuclideanColorDistanceAlgorithm extends DirectAlgorithm {
 
   /// Computes euclidean color distance between two images
@@ -121,10 +132,19 @@ class EuclideanColorDistanceAlgorithm extends DirectAlgorithm {
                   pow((_pixelListPair.item1[i]._green - _pixelListPair.item2[i]._green) / 255, 2));
     }
 
-    return sum / (numPixels * sqrt(3));
+    return sum / (numPixels * sqrt(3)); // percentage difference
   }
 }
 
+/// Algorithm class for comparing images with standard pixel matching.
+/// 
+/// Images are resized to the same dimensions (if dimensions don't match)
+/// and each [src1] pixel's RGB value is checked to see if it falls within 5%
+/// (of 256) of [src2] pixel's RGB value.
+/// 
+/// * Best with images of similar aspect ratios and dimensions
+/// * Compare for exactness (if two images are identical)
+/// * Returns percentage similarity (0.0 - no similarity, 1.0 - 100% similarity)
 class PixelMatchingAlgorithm extends DirectAlgorithm {
 
   /// Computes overlap between two images's color intensities.
@@ -157,6 +177,19 @@ class PixelMatchingAlgorithm extends DirectAlgorithm {
   }
 }
 
+/// Algorithm class for comparing images with image euclidean distance
+/// 
+/// Images are resized to the same dimensions (if dimensions don't match)
+/// and are grayscaled. A gaussian blur is applied when calculating distance
+/// between pixel intensities. Spatial relationship is taken into account 
+/// within the guassian function to reduce effect of minor perturbations.  
+/// 
+/// sum(exp(-distance([i], [j]) ^2 / 2 * pi * sigma^2) * (src1[i] - src2[i]) *
+/// (src1[j] - src2[j]))
+/// 
+/// * Best with images of similar aspect ratios and dimensions
+/// * Compare for ~exactness (if two images are roughly identical)
+/// * Returns percentage difference (0.0 - no difference, 1.0 - 100% difference)
 class IMEDAlgorithm extends DirectAlgorithm {
 
   /// Computes distance between two images
@@ -376,8 +409,11 @@ class RGBHistogram {
 /// 
 /// 0.5* sum((binCount1 - binCount2)^2 / (binCount1 + binCount2))
 /// 
-/// Number of histograms bins is 256. Frequencies for RGB intensities are counted in
-/// one histogram representation.
+/// Number of histograms bins is 256. Three histograms represent RGB distributions.
+/// 
+/// * Works with images of all aspect ratios and dimensions
+/// * Compare for similarity (if two images are similar based on their color distribution)
+/// * Returns percentage difference (0.0 - no difference, 1.0 - 100% difference)
 class ChiSquareHistogramAlgorithm extends HistogramAlgorithm {
   /// Calculates histogram similarity using chi-squared distance
   @override
@@ -421,8 +457,11 @@ class ChiSquareHistogramAlgorithm extends HistogramAlgorithm {
 /// 
 /// sum(min(binCount1, binCount2))
 /// 
-/// Number of histograms bins is 256. Frequencies for RGB intensities are counted in
-/// one histogram representation.
+/// Number of histograms bins is 256. Three histograms represent RGB distributions.
+/// 
+/// * Best with images of similar aspect ratios and dimensions
+/// * Compare for similarity (if two images are similar based on their color distribution)
+/// * Returns percentage similarity (0.0 - no similarity, 1.0 - 100% similarity)
 class IntersectionHistogramAlgorithm extends HistogramAlgorithm {
   /// Calculates histogram similarity using standard intersection
   @override
