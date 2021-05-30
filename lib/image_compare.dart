@@ -167,6 +167,8 @@ class IMEDAlgorithm extends DirectAlgorithm {
     super.compare(src1, src2);
 
     var sum = 0.0;
+    var gaussNorm = 0.0; // factor to divide by to normalize
+
     final SRC_PERCENTAGE = 0.01;
     final sigma = SRC_PERCENTAGE * src1.width;
     final offset = (sigma).ceil();
@@ -180,8 +182,11 @@ class IMEDAlgorithm extends DirectAlgorithm {
         var y = _pixelListPair.item2; // src2 pixel list
         
         if (j >= 0 && j < y.length) {
-          sum += exp(-pow(_distance(i, j, src1.width), 2) / 2 * pow(sigma, 2)) * 
-                (_grayValue(x[i]) - _grayValue(y[i])) / 255 *
+          var gauss = exp(-pow(_distance(i, j, src1.width), 2) / 2 * pow(sigma, 2));
+
+          gaussNorm += gauss;
+
+          sum += gauss * (_grayValue(x[i]) - _grayValue(y[i])) / 255 *
                 (_grayValue(x[j]) - _grayValue(y[j])) / 255;
         }
 
@@ -192,7 +197,7 @@ class IMEDAlgorithm extends DirectAlgorithm {
       }
     }
 
-    return sum * (1 / (2 * pi * pow(sigma, 2)));
+    return sum / gaussNorm; // percentage difference
   }
 
   /// Helper function to return grayscale value of a pixel
