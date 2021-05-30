@@ -402,7 +402,7 @@ class IntersectionHistogramAlgorithm extends HistogramAlgorithm {
            _diff(_histograms.item1.greenHist, _histograms.item2.greenHist) +
            _diff(_histograms.item1.blueHist, _histograms.item2.blueHist);
 
-    return sum / 3;
+    return sum / 3; // percentage of [src2] that matches [src1]
   }
 
   /// Helper function to compute difference between two histograms
