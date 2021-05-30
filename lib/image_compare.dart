@@ -169,8 +169,11 @@ class IMEDAlgorithm extends DirectAlgorithm {
     var sum = 0.0;
     var gaussNorm = 0.0; // factor to divide by to normalize
 
-    final SRC_PERCENTAGE = 0.01;
-    final sigma = SRC_PERCENTAGE * src1.width;
+    final SRC_PERCENTAGE = 0.005;
+    final smallerDim = (src1.width < src1.height)? 
+                        src1.width : src1.height;
+                        
+    final sigma = SRC_PERCENTAGE * smallerDim;
     final offset = (sigma).ceil();
     final len = 1 + offset * 2;
 
