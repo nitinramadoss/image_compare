@@ -313,6 +313,11 @@ abstract class HistogramAlgorithm extends Algorithm {
 
     return 0.0; // default return
   }
+
+  /// Helper function that's overrided by subclasses 
+  /// to compute differences between histograms
+  // ignore: unused_element
+  double _diff(List src1Hist, List src2Hist) => 0.0;
 }
 
 /// Organizational class for storing [src1] and [src2] data.
@@ -348,14 +353,17 @@ class ChiSquareHistogramAlgorithm extends HistogramAlgorithm {
 
     var sum = 0.0;
 
-    sum += _diff(_histograms.item1.redHist, _histograms.item2.redHist);
-    sum += _diff(_histograms.item1.greenHist, _histograms.item2.greenHist);
-    sum += _diff(_histograms.item1.blueHist, _histograms.item2.blueHist);
+    sum += _diff(_histograms.item1.redHist, _histograms.item2.redHist) +
+           _diff(_histograms.item1.greenHist, _histograms.item2.greenHist) +
+           _diff(_histograms.item1.blueHist, _histograms.item2.blueHist);
 
     return sum / 3;
   }
 
-  double _diff( List src1Hist, List src2Hist) {
+  /// Helper function to compute chi square difference
+  /// between two histograms
+  @override
+  double _diff(List src1Hist, List src2Hist) {
     var sum = 0.0;
 
     for (var i = 0; i < _binSize; i++) {
@@ -389,14 +397,27 @@ class IntersectionHistogramAlgorithm extends HistogramAlgorithm {
     super.compare(src1, src2);
 
     var sum = 0.0;
+
+    sum += _diff(_histograms.item1.redHist, _histograms.item2.redHist) +
+           _diff(_histograms.item1.greenHist, _histograms.item2.greenHist) +
+           _diff(_histograms.item1.blueHist, _histograms.item2.blueHist);
+
+    return sum / 3;
+  }
+
+  /// Helper function to compute difference between two histograms
+  /// by summing overlap
+  @override
+  double _diff(List src1Hist, List src2Hist) {
+    var sum = 0.0;
+
     for (var i = 0; i < _binSize; i++) {
-      var count1 = _histograms.item1[i];
-      var count2 = _histograms.item2[i];
+      var count1 = src1Hist[i];
+      var count2 = src2Hist[i];
 
       sum += min(count1, count2);
     }
 
-    return sum /
-        (src2.width * src2.height); // percentage of [src2] that matches [src1]
+    return sum;
   }
 }
