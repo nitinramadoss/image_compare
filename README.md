@@ -2,6 +2,18 @@
 ## Comparing images for similarity
 ### Simple, extensible dart package
 
+## Dependency
+Add to pubspec.yaml
+```
+dependencies:
+    image_compare: ^1.0.0
+```
+
+Import:
+```
+import 'package:image_compare/image_compare.dart';
+```
+
 ## Features:
 **Pixel Comparison Algorithms**
 - Pixel matching
@@ -15,3 +27,4 @@
 **Hashing Comparison Algorithms**
 - Average
 - Median
+
