@@ -1,4 +1,17 @@
-A simple command-line application.
+# image_compare
+## Comparing images for similarity
+### Simple, extensible dart package
 
-Created from templates made available by Stagehand under a BSD-style
-[license](https://github.com/dart-lang/stagehand/blob/master/LICENSE).
+## Features:
+**Pixel Comparison Algorithms**
+- Pixel matching
+- Euclidean Color Distance
+- IMage Euclidean Distance (IMED)
+
+**Histogram Comparison Algorithms**
+- Chi Square Difference
+- Intersection 
+
+**Hashing Comparison Algorithms**
+- Average
+- Median
