@@ -26,11 +26,11 @@ class ImagePair {
     _algorithm = algorithm; //overrides default
   }
 
-  /// Forwards compare request to [algorithm] object 
+  /// Forwards compare request to [algorithm] object
   double compare() {
     return _algorithm.compare(_src1, _src2);
   }
- 
+
   /// Getters for [src1] and [src2]
   Image get image1 => _src1;
   Image get image2 => _src2;
@@ -77,14 +77,12 @@ class Pixel {
 
 /// Algorithm class for comparing images pixel-by-pixel
 abstract class DirectAlgorithm extends Algorithm {
-
   /// Resizes images if dimensions do not match.
-  /// If different sizes, larger image will be 
+  /// If different sizes, larger image will be
   /// resized to the smaller image
   @override
   double compare(Image src1, Image src2) {
-    if (src1.width != src2.width && 
-        src1.height != src2.height) {
+    if (src1.width != src2.width && src1.height != src2.height) {
       var size1 = src1.width * src1.height;
       var size2 = src2.width * src2.height;
 
@@ -104,7 +102,6 @@ abstract class DirectAlgorithm extends Algorithm {
 
 /// Algorithm class for comparing images with euclidean color distance
 class EuclideanColorDistanceAlgorithm extends DirectAlgorithm {
-
   /// Computes euclidean color distance between two images
   /// of the same size
   @override
@@ -116,9 +113,19 @@ class EuclideanColorDistanceAlgorithm extends DirectAlgorithm {
 
     var numPixels = src1.width * src1.height;
     for (var i = 0; i < numPixels; i++) {
-      sum += sqrt(pow((_pixelListPair.item1[i]._red - _pixelListPair.item2[i]._red) / 255, 2) +
-                  pow((_pixelListPair.item1[i]._blue - _pixelListPair.item2[i]._blue) / 255, 2) +
-                  pow((_pixelListPair.item1[i]._green - _pixelListPair.item2[i]._green) / 255, 2));
+      sum += sqrt(pow(
+              (_pixelListPair.item1[i]._red - _pixelListPair.item2[i]._red) /
+                  255,
+              2) +
+          pow(
+              (_pixelListPair.item1[i]._blue - _pixelListPair.item2[i]._blue) /
+                  255,
+              2) +
+          pow(
+              (_pixelListPair.item1[i]._green -
+                      _pixelListPair.item2[i]._green) /
+                  255,
+              2));
     }
 
     return sum;
@@ -126,7 +133,6 @@ class EuclideanColorDistanceAlgorithm extends DirectAlgorithm {
 }
 
 class PixelMatchingAlgorithm extends DirectAlgorithm {
-
   /// Computes overlap between two images's color intensities.
   /// Return value is the fraction similarity e.g. 0.1 means 10%
   @override
@@ -141,10 +147,12 @@ class PixelMatchingAlgorithm extends DirectAlgorithm {
     var numPixels = src1.width * src1.height;
 
     for (var i = 0; i < numPixels; i++) {
-      if (_withinRange(delta, _pixelListPair.item1[i]._red, _pixelListPair.item2[i]._red) &&
-          _withinRange(delta, _pixelListPair.item1[i]._blue, _pixelListPair.item2[i]._blue) &&
-          _withinRange(delta, _pixelListPair.item1[i]._green, _pixelListPair.item2[i]._green)) {
-        
+      if (_withinRange(delta, _pixelListPair.item1[i]._red,
+              _pixelListPair.item2[i]._red) &&
+          _withinRange(delta, _pixelListPair.item1[i]._blue,
+              _pixelListPair.item2[i]._blue) &&
+          _withinRange(delta, _pixelListPair.item1[i]._green,
+              _pixelListPair.item2[i]._green)) {
         count++;
       }
     }
@@ -158,7 +166,6 @@ class PixelMatchingAlgorithm extends DirectAlgorithm {
 }
 
 class IMEDAlgorithm extends DirectAlgorithm {
-
   /// Computes distance between two images
   /// using image euclidean distance
   @override
@@ -179,11 +186,13 @@ class IMEDAlgorithm extends DirectAlgorithm {
       for (var j = start; j <= (i + offset) + (src1.width * offset); j++) {
         var x = _pixelListPair.item1; // src1 pixel list
         var y = _pixelListPair.item2; // src2 pixel list
-        
+
         if (j >= 0 && j < y.length) {
-          sum += exp(-pow(_distance(i, j, src1.width), 2) / 2 * pow(sigma, 2)) * 
-                (_grayValue(x[i]) - _grayValue(y[i])) / 255 *
-                (_grayValue(x[j]) - _grayValue(y[j])) / 255;
+          sum += exp(-pow(_distance(i, j, src1.width), 2) / 2 * pow(sigma, 2)) *
+              (_grayValue(x[i]) - _grayValue(y[i])) /
+              255 *
+              (_grayValue(x[j]) - _grayValue(y[j])) /
+              255;
         }
 
         if (j == (start + len)) {
@@ -201,15 +210,15 @@ class IMEDAlgorithm extends DirectAlgorithm {
     return getLuminanceRgb(p._red, p._green, p._blue);
   }
 
-  /// Helper function to return distance between two pixels at 
+  /// Helper function to return distance between two pixels at
   /// indices [i] and [j]
   double _distance(var i, var j, var width) {
     var distance = 0.0;
     var pointA = Tuple2((i % width), (i / width));
     var pointB = Tuple2((j % width), (j / width));
 
-    distance = sqrt(pow(pointB.item1 - pointA.item1, 2) + 
-                    pow(pointB.item2 - pointA.item2, 2));
+    distance = sqrt(pow(pointB.item1 - pointA.item1, 2) +
+        pow(pointB.item2 - pointA.item2, 2));
 
     return distance;
   }
@@ -229,12 +238,12 @@ abstract class HashAlgorithm extends Algorithm {
     return 0.0; //default return
   }
 
-  double hamming_distance(String str1, String str2) {
-    var dist_counter = 0;
+  double hammingDistace(String str1, String str2) {
+    var distCounter = 0;
     for (var i = 0; i < str1.length; i++) {
-      dist_counter += str1[i] != str2[i] ? 1 : 0;
+      distCounter += str1[i] != str2[i] ? 1 : 0;
     }
-    return dist_counter.toDouble();
+    return distCounter.toDouble();
   }
 }
 
@@ -247,23 +256,23 @@ class AverageHash extends HashAlgorithm {
     var hash1 = calcAvg(_pixelListPair.item1);
     var hash2 = calcAvg(_pixelListPair.item2);
 
-    return super.hamming_distance(hash1, hash2);
+    return super.hammingDistace(hash1, hash2);
   }
 
-  String calcAvg(List pixel_list) {
-    var src_array = pixel_list.map((e) => e._red).toList();
+  String calcAvg(List pixelList) {
+    var srcArray = pixelList.map((e) => e._red).toList();
 
-    var bit_string = '';
+    var bitString = '';
 
-    var mean = (src_array.reduce((a, b) => a + b) / src_array.length);
-    src_array.asMap().forEach((key, value) {
-      src_array[key] = value > mean ? 1 : 0;
+    var mean = (srcArray.reduce((a, b) => a + b) / srcArray.length);
+    srcArray.asMap().forEach((key, value) {
+      srcArray[key] = value > mean ? 1 : 0;
     });
 
-    src_array.forEach((element) {
-      bit_string += (1 * element).toString();
+    srcArray.forEach((element) {
+      bitString += (1 * element).toString();
     });
-    return BigInt.parse(bit_string, radix: 2).toRadixString(16);
+    return BigInt.parse(bitString, radix: 2).toRadixString(16);
   }
 }
 
@@ -277,27 +286,27 @@ class MedianHash extends HashAlgorithm {
     var hash2 = calcMedian(_pixelListPair.item2);
 
     // Delegates hamming distance computation to parent
-    return super.hamming_distance(hash1, hash2);
+    return super.hammingDistace(hash1, hash2);
   }
 
   /// Computes average hash string for an image
-  String calcMedian(List pixel_list) {
-    var src_array = pixel_list.map((e) => e._red).toList();
-    var tempArr = List.from(src_array);
-    var bit_string = '';
+  String calcMedian(List pixelList) {
+    var srcArray = pixelList.map((e) => e._red).toList();
+    var tempArr = List.from(srcArray);
+    var bitString = '';
     tempArr.sort((a, b) => a.compareTo(b));
     var median = (tempArr[((tempArr.length - 1) / 2).floor()] +
             tempArr[((tempArr.length - 1) / 2).floor() + 1]) /
         2;
-    src_array.asMap().forEach((key, value) {
-      src_array[key] = value > median ? 1 : 0;
+    srcArray.asMap().forEach((key, value) {
+      srcArray[key] = value > median ? 1 : 0;
     });
 
-    src_array.forEach((element) {
-      bit_string += (1 * element).toString();
+    srcArray.forEach((element) {
+      bitString += (1 * element).toString();
     });
 
-    return BigInt.parse(bit_string, radix: 2).toRadixString(16);
+    return BigInt.parse(bitString, radix: 2).toRadixString(16);
   }
 }
 
@@ -341,7 +350,7 @@ abstract class HistogramAlgorithm extends Algorithm {
     return 0.0; // default return
   }
 
-  /// Helper function that's overrided by subclasses 
+  /// Helper function that's overrided by subclasses
   /// to compute differences between histograms
   // ignore: unused_element
   double _diff(List src1Hist, List src2Hist) => 0.0;
@@ -351,24 +360,24 @@ abstract class HistogramAlgorithm extends Algorithm {
 /// Fields are RGB histograms (256 element lists)
 class RGBHistogram {
   final _binSize;
-  late List redHist; 
-  late List greenHist; 
+  late List redHist;
+  late List greenHist;
   late List blueHist;
 
   RGBHistogram(this._binSize) {
-    redHist = List.filled(_binSize, 0.0); 
-    greenHist = List.filled(_binSize, 0.0); 
-    blueHist = List.filled(_binSize, 0.0); 
+    redHist = List.filled(_binSize, 0.0);
+    greenHist = List.filled(_binSize, 0.0);
+    blueHist = List.filled(_binSize, 0.0);
   }
 }
 
 /// Algorithm class for comparing images with chi-square histogram intersections
-/// 
+///
 /// Images are converted to histogram representations (x-axis intensity, y-axis frequency).
 /// The chi-square distance formula is applied to compute the distance between each bin:
-/// 
+///
 /// 0.5* sum((binCount1 - binCount2)^2 / (binCount1 + binCount2))
-/// 
+///
 /// Number of histograms bins is 256. Frequencies for RGB intensities are counted in
 /// one histogram representation.
 class ChiSquareHistogramAlgorithm extends HistogramAlgorithm {
@@ -381,8 +390,8 @@ class ChiSquareHistogramAlgorithm extends HistogramAlgorithm {
     var sum = 0.0;
 
     sum += _diff(_histograms.item1.redHist, _histograms.item2.redHist) +
-           _diff(_histograms.item1.greenHist, _histograms.item2.greenHist) +
-           _diff(_histograms.item1.blueHist, _histograms.item2.blueHist);
+        _diff(_histograms.item1.greenHist, _histograms.item2.greenHist) +
+        _diff(_histograms.item1.blueHist, _histograms.item2.blueHist);
 
     return sum / 3;
   }
@@ -407,13 +416,13 @@ class ChiSquareHistogramAlgorithm extends HistogramAlgorithm {
 }
 
 /// Algorithm class for comparing images with standard histogram intersection.
-/// 
+///
 /// Images are converted to histogram representations (x-axis intensity, y-axis frequency).
 /// Generated histograms are overlayed to examine percentage overlap, thereby indicating
 /// percentage similarity in pixel intensity frequencies:
-/// 
+///
 /// sum(min(binCount1, binCount2))
-/// 
+///
 /// Number of histograms bins is 256. Frequencies for RGB intensities are counted in
 /// one histogram representation.
 class IntersectionHistogramAlgorithm extends HistogramAlgorithm {
@@ -426,8 +435,8 @@ class IntersectionHistogramAlgorithm extends HistogramAlgorithm {
     var sum = 0.0;
 
     sum += _diff(_histograms.item1.redHist, _histograms.item2.redHist) +
-           _diff(_histograms.item1.greenHist, _histograms.item2.greenHist) +
-           _diff(_histograms.item1.blueHist, _histograms.item2.blueHist);
+        _diff(_histograms.item1.greenHist, _histograms.item2.greenHist) +
+        _diff(_histograms.item1.blueHist, _histograms.item2.blueHist);
 
     return sum / 3; // percentage of [src2] that matches [src1]
   }
