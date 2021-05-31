@@ -100,7 +100,18 @@ abstract class DirectAlgorithm extends Algorithm {
   }
 }
 
-/// Algorithm class for comparing images with euclidean color distance
+/// Algorithm class for comparing images with euclidean distance.
+///
+/// Images are resized to the same dimensions (if dimensions don't match)
+/// and euclidean difference between [src1] RGB values and [src2] RGB values
+/// for each pixel is summed.
+///
+/// sum(sqrt(([src1[i].red - [src2[i].red)^2 + ([src1[i].blue - [src2[i].blue)^2 +
+/// ([src1[i].green - [src2[i].green)^2)
+///
+/// * Best with images of similar aspect ratios and dimensions
+/// * Compare for exactness (if two images are identical)
+/// * Returns percentage difference (0.0 - no difference, 1.0 - 100% difference)
 class EuclideanColorDistanceAlgorithm extends DirectAlgorithm {
   /// Computes euclidean color distance between two images
   /// of the same size
@@ -128,10 +139,19 @@ class EuclideanColorDistanceAlgorithm extends DirectAlgorithm {
               2));
     }
 
-    return sum;
+    return sum / (numPixels * sqrt(3)); // percentage difference
   }
 }
 
+/// Algorithm class for comparing images with standard pixel matching.
+///
+/// Images are resized to the same dimensions (if dimensions don't match)
+/// and each [src1] pixel's RGB value is checked to see if it falls within 5%
+/// (of 256) of [src2] pixel's RGB value.
+///
+/// * Best with images of similar aspect ratios and dimensions
+/// * Compare for exactness (if two images are identical)
+/// * Returns percentage similarity (0.0 - no similarity, 1.0 - 100% similarity)
 class PixelMatchingAlgorithm extends DirectAlgorithm {
   /// Computes overlap between two images's color intensities.
   /// Return value is the fraction similarity e.g. 0.1 means 10%
@@ -165,6 +185,19 @@ class PixelMatchingAlgorithm extends DirectAlgorithm {
   }
 }
 
+/// Algorithm class for comparing images with image euclidean distance
+///
+/// Images are resized to the same dimensions (if dimensions don't match)
+/// and are grayscaled. A gaussian blur is applied when calculating distance
+/// between pixel intensities. Spatial relationship is taken into account
+/// within the guassian function to reduce effect of minor perturbations.
+///
+/// sum(exp(-distance([i], [j]) ^2 / 2 * pi * sigma^2) * (src1[i] - src2[i]) *
+/// (src1[j] - src2[j]))
+///
+/// * Best with images of similar aspect ratios and dimensions
+/// * Compare for ~exactness (if two images are roughly identical)
+/// * Returns percentage difference (0.0 - no difference, 1.0 - 100% difference)
 class IMEDAlgorithm extends DirectAlgorithm {
   /// Computes distance between two images
   /// using image euclidean distance
@@ -174,13 +207,16 @@ class IMEDAlgorithm extends DirectAlgorithm {
     super.compare(src1, src2);
 
     var sum = 0.0;
-    final SRC_PERCENTAGE = 0.01;
-    final sigma = SRC_PERCENTAGE * src1.width;
+    var gaussNorm = 0.0; // factor to divide by to normalize
+
+    final SRC_PERCENTAGE = 0.005;
+    final smallerDim = (src1.width < src1.height) ? src1.width : src1.height;
+
+    final sigma = SRC_PERCENTAGE * smallerDim;
+    final offset = (sigma).ceil();
+    final len = 1 + offset * 2;
 
     for (var i = 0; i < _pixelListPair.item1.length; i++) {
-      var offset = (sigma).ceil();
-      var len = 1 + offset * 2;
-
       var start = (i - offset) - (src1.width * offset);
 
       for (var j = start; j <= (i + offset) + (src1.width * offset); j++) {
@@ -188,7 +224,12 @@ class IMEDAlgorithm extends DirectAlgorithm {
         var y = _pixelListPair.item2; // src2 pixel list
 
         if (j >= 0 && j < y.length) {
-          sum += exp(-pow(_distance(i, j, src1.width), 2) / 2 * pow(sigma, 2)) *
+          var gauss =
+              exp(-pow(_distance(i, j, src1.width), 2) / 2 * pow(sigma, 2));
+
+          gaussNorm += gauss;
+
+          sum += gauss *
               (_grayValue(x[i]) - _grayValue(y[i])) /
               255 *
               (_grayValue(x[j]) - _grayValue(y[j])) /
@@ -202,7 +243,7 @@ class IMEDAlgorithm extends DirectAlgorithm {
       }
     }
 
-    return sum * (1 / (2 * pi * pow(sigma, 2)));
+    return sum / gaussNorm; // percentage difference
   }
 
   /// Helper function to return grayscale value of a pixel
@@ -378,8 +419,11 @@ class RGBHistogram {
 ///
 /// 0.5* sum((binCount1 - binCount2)^2 / (binCount1 + binCount2))
 ///
-/// Number of histograms bins is 256. Frequencies for RGB intensities are counted in
-/// one histogram representation.
+/// Number of histograms bins is 256. Three histograms represent RGB distributions.
+///
+/// * Works with images of all aspect ratios and dimensions
+/// * Compare for similarity (if two images are similar based on their color distribution)
+/// * Returns percentage difference (0.0 - no difference, 1.0 - 100% difference)
 class ChiSquareHistogramAlgorithm extends HistogramAlgorithm {
   /// Calculates histogram similarity using chi-squared distance
   @override
@@ -423,8 +467,11 @@ class ChiSquareHistogramAlgorithm extends HistogramAlgorithm {
 ///
 /// sum(min(binCount1, binCount2))
 ///
-/// Number of histograms bins is 256. Frequencies for RGB intensities are counted in
-/// one histogram representation.
+/// Number of histograms bins is 256. Three histograms represent RGB distributions.
+///
+/// * Best with images of similar aspect ratios and dimensions
+/// * Compare for similarity (if two images are similar based on their color distribution)
+/// * Returns percentage similarity (0.0 - no similarity, 1.0 - 100% similarity)
 class IntersectionHistogramAlgorithm extends HistogramAlgorithm {
   /// Calculates histogram similarity using standard intersection
   @override
