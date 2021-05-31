@@ -23,7 +23,7 @@ import 'package:image_compare/image_compare.dart';
 - IMage Euclidean Distance (IMED) ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) `IMED()`
 
 **Histogram Comparison Algorithms**
-- Chi Square Difference ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) `ChiSquareDifferenceHistogram()`
+- Chi Square Distance ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) `ChiSquareDistanceHistogram()`
 - Intersection ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) `IntersectionHistogram()`
 
 **Hashing Comparison Algorithms**
@@ -83,7 +83,7 @@ var result = pair.compare();
 #### Returns
  - Returns percentage difference (0.0 - no difference, 1.0 - 100% difference)
 
-### ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) `ChiSquareDifferenceHistogram()`
+### ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) `ChiSquareDistanceHistogram()`
 
 #### About
  - Images are converted to histogram representations (x-axis intensity, y-axis frequency). The chi-square distance formula is applied to compute the distance between each of the 256 bins. There are three histograms per image (RGB histograms).  
@@ -96,7 +96,7 @@ var result = pair.compare();
 ### ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) `IntersectionHistogram()`
 
 #### About
- - Images are converted to histogram representations (x-axis intensity, y-axis frequency). The chi-square distance formula is applied to compute the distance between each of the 256 bins. There are three histograms per image (RGB histograms).  
+ - Images are converted to histogram representations (x-axis intensity, y-axis frequency). Histograms are overlayed to calculate percentage overlap. There are three histograms per image (RGB histograms).  
  - Works with images of all aspect ratios and dimensions
  - Compare for similarity (if two images are similar based on their color distribution)
 
