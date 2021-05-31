@@ -11,6 +11,6 @@ void main(List<String> arguments) {
   var imageFile2 = IO.File('test2.png').readAsBytesSync();
   var image2 = decodeImage(imageFile2)!;
 
-  var pair = ImagePair(image1, image2)..setAlgorithm(IMEDAlgorithm  ());
+  var pair = ImagePair(image1, image2)..setAlgorithm(IMED());
   print(pair.compare());
 }
