@@ -5,36 +5,13 @@ import 'package:image/image.dart';
 import 'package:meta/meta.dart';
 import 'package:tuple/tuple.dart';
 
-class ImagePair {
-  /// Algorithm used for comparison
-  late Algorithm _algorithm;
+/// Compare [src1] and [src2] given a specified [algorithm].
+/// If [algorithm] is not specified, the default (PixelMatching())
+/// will be supplied.
+double compareImages(Image src1, Image src2, [Algorithm? algorithm]) {
+  algorithm ??= PixelMatching(); //default algorithm
 
-  /// Image object from the dart image library
-  late Image _src1;
-
-  /// Image object from the dart image library
-  late Image _src2;
-
-  /// ImagePair constructor requires [src1] and [src2] images from the dart image library
-  ImagePair(Image src1, Image src2) {
-    _src1 = src1;
-    _src2 = src2;
-    _algorithm = PixelMatching(); // default algorithm
-  }
-
-  /// Sets concrete subclass, [algorithm], for Algorithm
-  void setAlgorithm(Algorithm algorithm) {
-    _algorithm = algorithm; //overrides default
-  }
-
-  /// Forwards compare request to [algorithm] object
-  double compare() {
-    return _algorithm.compare(_src1, _src2);
-  }
-
-  /// Getters for [src1] and [src2]
-  Image get image1 => _src1;
-  Image get image2 => _src2;
+  return algorithm.compare(src1, src2);
 }
 
 /// Abstract class for all algorithms
