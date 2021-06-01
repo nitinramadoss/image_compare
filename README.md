@@ -2,7 +2,7 @@
 ### Comparing images for similarity
 #### Simple, extensible dart package
 
-![alt text](https://github.com/nitinramadoss/image_compare/blob/main/seven2.PNG) ![alt text](https://github.com/nitinramadoss/image_compare/blob/main/seven.PNG)
+![alt text](https://github.com/nitinramadoss/image_compare/blob/main/images/seven2.PNG) ![alt text](https://github.com/nitinramadoss/image_compare/blob/main/images/seven.PNG)
 
 ## Dependency
 Add to pubspec.yaml

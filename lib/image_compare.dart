@@ -19,7 +19,7 @@ class ImagePair {
   ImagePair(Image src1, Image src2) {
     _src1 = src1;
     _src2 = src2;
-    _algorithm = PixelMatchingAlgorithm(); // default algorithm
+    _algorithm = PixelMatching(); // default algorithm
   }
 
   /// Sets concrete subclass, [algorithm], for Algorithm
@@ -118,7 +118,7 @@ abstract class DirectAlgorithm extends Algorithm {
 /// * Best with images of similar aspect ratios and dimensions
 /// * Compare for exactness (if two images are identical)
 /// * Returns percentage difference (0.0 - no difference, 1.0 - 100% difference)
-class EuclideanColorDistanceAlgorithm extends DirectAlgorithm {
+class EuclideanColorDistance extends DirectAlgorithm {
   /// Computes euclidean color distance between two images
   /// of the same size
   @override
@@ -158,7 +158,7 @@ class EuclideanColorDistanceAlgorithm extends DirectAlgorithm {
 /// * Best with images of similar aspect ratios and dimensions
 /// * Compare for exactness (if two images are identical)
 /// * Returns percentage similarity (0.0 - no similarity, 1.0 - 100% similarity)
-class PixelMatchingAlgorithm extends DirectAlgorithm {
+class PixelMatching extends DirectAlgorithm {
   /// Computes overlap between two images's color intensities.
   /// Return value is the fraction similarity e.g. 0.1 means 10%
   @override
@@ -196,7 +196,7 @@ class PixelMatchingAlgorithm extends DirectAlgorithm {
 /// Images are resized to the same dimensions (if dimensions don't match)
 /// and are grayscaled. A gaussian blur is applied when calculating distance
 /// between pixel intensities. Spatial relationship is taken into account
-/// within the guassian function to reduce effect of minor perturbations.
+/// within the guassian function to reduce the effect of minor perturbations.
 ///
 /// sum(exp(-distance([i], [j]) ^2 / 2 * pi * sigma^2) * (src1[i] - src2[i]) *
 /// (src1[j] - src2[j]))
@@ -204,7 +204,7 @@ class PixelMatchingAlgorithm extends DirectAlgorithm {
 /// * Best with images of similar aspect ratios and dimensions
 /// * Compare for ~exactness (if two images are roughly identical)
 /// * Returns percentage difference (0.0 - no difference, 1.0 - 100% difference)
-class IMEDAlgorithm extends DirectAlgorithm {
+class IMED extends DirectAlgorithm {
   /// Computes distance between two images
   /// using image euclidean distance
   @override
@@ -534,7 +534,7 @@ class RGBHistogram {
 /// * Works with images of all aspect ratios and dimensions
 /// * Compare for similarity (if two images are similar based on their color distribution)
 /// * Returns percentage difference (0.0 - no difference, 1.0 - 100% difference)
-class ChiSquareHistogramAlgorithm extends HistogramAlgorithm {
+class ChiSquareDistanceHistogram extends HistogramAlgorithm {
   /// Calculates histogram similarity using chi-squared distance
   @override
   double compare(Image src1, Image src2) {
@@ -582,7 +582,7 @@ class ChiSquareHistogramAlgorithm extends HistogramAlgorithm {
 /// * Best with images of similar aspect ratios and dimensions
 /// * Compare for similarity (if two images are similar based on their color distribution)
 /// * Returns percentage similarity (0.0 - no similarity, 1.0 - 100% similarity)
-class IntersectionHistogramAlgorithm extends HistogramAlgorithm {
+class IntersectionHistogram extends HistogramAlgorithm {
   /// Calculates histogram similarity using standard intersection
   @override
   double compare(Image src1, Image src2) {
