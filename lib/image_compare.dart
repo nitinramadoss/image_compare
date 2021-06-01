@@ -1,6 +1,4 @@
 import 'dart:math';
-
-import 'package:crypto/crypto.dart';
 import 'package:image/image.dart';
 import 'package:meta/meta.dart';
 import 'package:tuple/tuple.dart';
@@ -248,43 +246,45 @@ class IMED extends DirectAlgorithm {
   }
 }
 
-/// Algorithm class for comparing images with hashing
+/// Abstract class for all hash alogrithms
 abstract class HashAlgorithm extends Algorithm {
-  /// Resizes images to same dimension
+  // Delegates pixel extraction to parent
   @override
   double compare(Image src1, Image src2) {
-    // Delegates pixel extraction to parent
     super.compare(src1, src2);
-
     return 0.0; //default return
   }
 
+  // Helper function used by subclasses to return hamming distance between two hashes
   double hammingDistace(String str1, String str2) {
     var distCounter = 0;
     for (var i = 0; i < str1.length; i++) {
       distCounter += str1[i] != str2[i] ? 1 : 0;
     }
-    return pow((distCounter / str1.length), 2) * 100;
+    return pow((distCounter / str1.length), 2).toDouble();
   }
 }
 
+/// Algorithm class for comparing images with the perceptual hash method based on https://github.com/freearhey/phash-js
 class PerceptualHash extends HashAlgorithm {
   final int _size = 32;
 
+  ///Resize and grayscale images
   @override
   double compare(Image src1, Image src2) {
-    src1 = copyResize(src1, height: 32, width: 32);
-    src2 = copyResize(src2, height: 32, width: 32);
+    src1 = copyResize(grayscale(src1), height: 32, width: 32);
+    src2 = copyResize(grayscale(src2), height: 32, width: 32);
     // Delegates image resizing to parent
     super.compare(src1, src2);
 
     var hash1 = calcPhash(_pixelListPair.item1);
-
     var hash2 = calcPhash(_pixelListPair.item2);
 
-    return super.hammingDistace(hash1, hash2);
+    return super.hammingDistace(hash1,
+        hash2); //super class hamming distance method to return a value between 0-1
   }
 
+  /// Helper function which computes a binary hash of a [List] of [Pixel]
   String calcPhash(List pixelList) {
     var bitString = '';
     var matrix = List<dynamic>.filled(32, 0);
@@ -292,13 +292,11 @@ class PerceptualHash extends HashAlgorithm {
     var rows = List<dynamic>.filled(32, 0);
     var col = List<dynamic>.filled(32, 0);
 
-    var data = unit8ListToMatrix(pixelList);
+    var data = unit8ListToMatrix(pixelList); //returns a matrix used for DCT
     for (var y = 0; y < _size; y++) {
       for (var x = 0; x < _size; x++) {
         var color = data[x][y];
-        row[x] =
-            (color._red * 0.299 + color._green * 0.587 + color._blue * 0.114)
-                .floor();
+        row[x] = getLuminanceRgb(color._red, color._green, color._blue);
       }
       rows[y] = calculateDCT(row);
     }
@@ -329,13 +327,14 @@ class PerceptualHash extends HashAlgorithm {
     return BigInt.parse(bitString, radix: 2).toRadixString(16);
   }
 
+  ///Helper funciton to compute the average of an array after dct caclulations
   num average(List pixels) {
     // Calculate the average value from top 8x8 pixels, except for the first one.
     var n = pixels.length - 1;
-
     return pixels.sublist(1, n).reduce((a, b) => a + b) / n;
   }
 
+  ///Helper function to perform 1D discrete cosine tranformation on a matrix
   List calculateDCT(List matrix) {
     var transformed = List<num>.filled(32, 0);
     var _size = matrix.length;
@@ -354,6 +353,7 @@ class PerceptualHash extends HashAlgorithm {
     return transformed;
   }
 
+  ///Helper function to convert a Unit8List to a nD matrix
   List unit8ListToMatrix(List pixelList) {
     var copy = pixelList.sublist(0);
     pixelList.clear();
@@ -371,7 +371,6 @@ class PerceptualHash extends HashAlgorithm {
   }
 }
 
-/// Abstract class for all hash algorithms
 class AverageHash extends HashAlgorithm {
   @override
   double compare(Image src1, Image src2) {
@@ -417,7 +416,7 @@ class MedianHash extends HashAlgorithm {
     return super.hammingDistace(hash1, hash2);
   }
 
-  /// Computes average hash string for an image
+  /// Helper funciton to compute median binary hash for an image
   String calcMedian(List pixelList) {
     var srcArray = pixelList.map((e) => e._red).toList();
     var tempArr = List.from(srcArray);
