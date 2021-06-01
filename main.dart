@@ -11,6 +11,5 @@ void main(List<String> arguments) {
   var imageFile2 = IO.File('images/black.png').readAsBytesSync();
   var image2 = decodeImage(imageFile2)!;
 
-  var pair = ImagePair(image1, image2)..setAlgorithm(IMED());
-  print(pair.compare());
+  print(compareImages(image1, image2, IntersectionHistogram()));
 }
