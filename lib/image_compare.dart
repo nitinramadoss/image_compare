@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:crypto/crypto.dart';
 import 'package:image/image.dart';
 import 'package:meta/meta.dart';
 import 'package:tuple/tuple.dart';
@@ -73,6 +74,11 @@ class Pixel {
   final int _green;
 
   Pixel(this._red, this._blue, this._green);
+
+  @override
+  String toString() {
+    return 'red: $_red, blue: $_blue, green: $_green';
+  }
 }
 
 /// Algorithm class for comparing images pixel-by-pixel
@@ -270,9 +276,6 @@ abstract class HashAlgorithm extends Algorithm {
   /// Resizes images to same dimension
   @override
   double compare(Image src1, Image src2) {
-    src1 = copyResize(grayscale(src1), height: 9, width: 8);
-    src2 = copyResize(grayscale(src2), height: 9, width: 8);
-
     // Delegates pixel extraction to parent
     super.compare(src1, src2);
 
@@ -284,7 +287,110 @@ abstract class HashAlgorithm extends Algorithm {
     for (var i = 0; i < str1.length; i++) {
       distCounter += str1[i] != str2[i] ? 1 : 0;
     }
-    return distCounter.toDouble();
+    return pow((distCounter / str1.length), 2) * 100;
+  }
+}
+
+class PerceptualHash extends HashAlgorithm {
+  final int _size = 32;
+
+  @override
+  double compare(Image src1, Image src2) {
+    src1 = copyResize(src1, height: 32, width: 32);
+    src2 = copyResize(src2, height: 32, width: 32);
+    // Delegates image resizing to parent
+    super.compare(src1, src2);
+
+    var hash1 = calcPhash(_pixelListPair.item1);
+
+    var hash2 = calcPhash(_pixelListPair.item2);
+
+    return super.hammingDistace(hash1, hash2);
+  }
+
+  String calcPhash(List pixelList) {
+    var bitString = '';
+    var matrix = List<dynamic>.filled(32, 0);
+    var row = List<dynamic>.filled(32, 0);
+    var rows = List<dynamic>.filled(32, 0);
+    var col = List<dynamic>.filled(32, 0);
+
+    var data = unit8ListToMatrix(pixelList);
+    for (var y = 0; y < _size; y++) {
+      for (var x = 0; x < _size; x++) {
+        var color = data[x][y];
+        row[x] =
+            (color._red * 0.299 + color._green * 0.587 + color._blue * 0.114)
+                .floor();
+      }
+      rows[y] = calculateDCT(row);
+    }
+    for (var x = 0; x < _size; x++) {
+      for (var y = 0; y < _size; y++) {
+        col[y] = rows[y][x];
+      }
+      matrix[x] = calculateDCT(col);
+    }
+
+    // Extract the top 8x8 pixels.
+    var pixels = [];
+    for (var y = 0; y < 8; y++) {
+      for (var x = 0; x < 8; x++) {
+        pixels.add(matrix[y][x]);
+      }
+    }
+    // Calculate hash.
+    var bits = [];
+    var compare = average(pixels);
+    for (var pixel in pixels) {
+      bits.add(pixel > compare ? 1 : 0);
+    }
+
+    bits.forEach((element) {
+      bitString += (1 * element).toString();
+    });
+    return BigInt.parse(bitString, radix: 2).toRadixString(16);
+  }
+
+  num average(List pixels) {
+    // Calculate the average value from top 8x8 pixels, except for the first one.
+    var n = pixels.length - 1;
+
+    return pixels.sublist(1, n).reduce((a, b) => a + b) / n;
+  }
+
+  List calculateDCT(List matrix) {
+    var transformed = List<num>.filled(32, 0);
+    var _size = matrix.length;
+    for (var i = 0; i < _size; i++) {
+      num sum = 0;
+      for (var j = 0; j < _size; j++) {
+        sum += matrix[j] * cos((i * pi * (j + 0.5)) / _size);
+      }
+      sum *= sqrt(2 / _size);
+      if (i == 0) {
+        sum *= 1 / sqrt(2);
+      }
+      transformed[i] = sum;
+    }
+
+    return transformed;
+  }
+
+  List unit8ListToMatrix(List pixelList) {
+    var copy = pixelList.sublist(0);
+    pixelList.clear();
+    for (var r = 0; r < _size; r++) {
+      var res = [];
+      for (var c = 0; c < _size; c++) {
+        var i = r * _size + c;
+        if (i < copy.length) {
+          res.add(copy[i]);
+        }
+      }
+      pixelList.add(res);
+    }
+    return pixelList;
   }
 }
 
@@ -292,6 +398,8 @@ abstract class HashAlgorithm extends Algorithm {
 class AverageHash extends HashAlgorithm {
   @override
   double compare(Image src1, Image src2) {
+    src1 = copyResize(grayscale(src1), height: 9, width: 8);
+    src2 = copyResize(grayscale(src2), height: 9, width: 8);
     // Delegates image resizing to parent
     super.compare(src1, src2);
     var hash1 = calcAvg(_pixelListPair.item1);
@@ -320,6 +428,8 @@ class AverageHash extends HashAlgorithm {
 class MedianHash extends HashAlgorithm {
   @override
   double compare(Image src1, Image src2) {
+    src1 = copyResize(grayscale(src1), height: 9, width: 8);
+    src2 = copyResize(grayscale(src2), height: 9, width: 8);
     // Delegates image resizing to parent
     super.compare(src1, src2);
 
