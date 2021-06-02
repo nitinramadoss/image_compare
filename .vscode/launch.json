@@ -5,6 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "program": "main.dart",
             "name": "imageComp",
             "request": "launch",
             "type": "dart"

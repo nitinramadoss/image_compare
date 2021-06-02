@@ -31,23 +31,16 @@ import 'package:image_compare/image_compare.dart';
 - Median ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) `MedianHash()`
 
 ## Implementation:
-Initialize two images from the dart image class 
+1. Initialize two images from the dart image class 
 *(https://pub.dev/documentation/image/latest/image/Image-class.html):*
 ```
 Image a = Image.fromBytes(width, height, bytes1);
 Image b = Image.fromBytes(width, height, bytes2);
 ```
-Construct an ```ImagePair``` object with the two images (from previous step):
+2. Select an algorithm (from features section). The default is ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) `PixelMatching()`
+3. Compare the images:
 ```
-ImagePair pair = ImagePair(a, b);
-```
-Choose an algorithm (from features section):
-```
-pair.setAlgorithm(IntersectionHistogram());
-```
-Compare the images using that algorithm:
-```
-var result = pair.compare();
+var result = compareImages(a, b, IntersectionHistogram())
 ```
 
 ## Algorithm Specifics: 
