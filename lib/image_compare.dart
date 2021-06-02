@@ -102,7 +102,8 @@ class EuclideanColorDistance extends DirectAlgorithm {
 
     var sum = 0.0;
 
-    var numPixels = src1.width * src1.height;
+    var numPixels = _pixelListPair.item1.length;
+
     for (var i = 0; i < numPixels; i++) {
       sum += sqrt(pow((_pixelListPair.item1[i]._red - _pixelListPair.item2[i]._red) / 255, 2) +
                   pow((_pixelListPair.item1[i]._blue - _pixelListPair.item2[i]._blue) / 255, 2) +
@@ -135,7 +136,7 @@ class PixelMatching extends DirectAlgorithm {
     // percentage leniency for pixel comparison
     var delta = 0.05 * 256;
 
-    var numPixels = src1.width * src1.height;
+    var numPixels = _pixelListPair.item1.length;
 
     for (var i = 0; i < numPixels; i++) {
       if (_withinRange(delta, _pixelListPair.item1[i]._red, _pixelListPair.item2[i]._red) &&
