@@ -142,6 +142,11 @@ class EuclideanColorDistance extends DirectAlgorithm {
 
     return sum / (numPixels * sqrt(3)); // percentage difference
   }
+
+  @override
+  String toString() {
+    return 'Euclidean Color Distance';
+  }
 }
 
 /// Algorithm class for comparing images with standard pixel matching.
@@ -183,6 +188,11 @@ class PixelMatching extends DirectAlgorithm {
 
   bool _withinRange(var delta, var value, var target) {
     return (target - delta < value && value < target + delta);
+  }
+
+  @override
+  String toString() {
+    return 'Pixel Matching';
   }
 }
 
@@ -263,6 +273,11 @@ class IMED extends DirectAlgorithm {
         pow(pointB.item2 - pointA.item2, 2));
 
     return distance;
+  }
+
+  @override
+  String toString() {
+    return 'IMage Euclidean Distance';
   }
 }
 
@@ -389,6 +404,11 @@ class PerceptualHash extends HashAlgorithm {
     }
     return pixelList;
   }
+
+  @override
+  String toString() {
+    return 'Perceptual Hash';
+  }
 }
 
 class AverageHash extends HashAlgorithm {
@@ -418,6 +438,11 @@ class AverageHash extends HashAlgorithm {
       bitString += (1 * element).toString();
     });
     return BigInt.parse(bitString, radix: 2).toRadixString(16);
+  }
+
+  @override
+  String toString() {
+    return 'Average Hash';
   }
 }
 
@@ -454,6 +479,11 @@ class MedianHash extends HashAlgorithm {
     });
 
     return BigInt.parse(bitString, radix: 2).toRadixString(16);
+  }
+
+  @override
+  String toString() {
+    return 'Median Hash';
   }
 }
 
@@ -563,6 +593,11 @@ class ChiSquareDistanceHistogram extends HistogramAlgorithm {
 
     return sum * 0.5;
   }
+
+  @override
+  String toString() {
+    return 'Chi Square Distance Histogram';
+  }
 }
 
 /// Algorithm class for comparing images with standard histogram intersection.
@@ -608,5 +643,10 @@ class IntersectionHistogram extends HistogramAlgorithm {
     }
 
     return sum;
+  }
+
+  @override
+  String toString() {
+    return 'Intersection Histogram';
   }
 }
