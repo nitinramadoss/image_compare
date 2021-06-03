@@ -1,16 +1,39 @@
 import 'package:image/image.dart';
 
 import 'package:image_compare/image_compare.dart';
-import 'dart:io' as IO;
+import 'dart:io';
 
 void main(List<String> arguments) {
-// NOTE: Test
+  compareImageToDirectory("images/animals/", "images/animals/bunny.jpg");
+}
 
-  var imageFile1 = IO.File('images/koala1.jpg').readAsBytesSync();
-  var image1 = decodeImage(imageFile1)!;
-  var imageFile2 = IO.File('images/koala2.jpg').readAsBytesSync();
-  var image2 = grayscale(decodeImage(imageFile2)!);
+Image getImageFile(String path) {
+  var imageFile1 = File(path).readAsBytesSync();
 
-  print(compareImages(image1, image2, ChiSquareDistanceHistogram()));
-  print(compareImages(image1, image2, IntersectionHistogram()));
+  return decodeImage(imageFile1)!;
+}
+
+void compareImageToDirectory(String dirName, String targetPath) async{
+  var directory = Directory(dirName);
+
+  var images = <String>[];
+
+  await for (var entity in
+      directory.list(recursive: true, followLinks: false)) {
+    
+    images.add(entity.path);
+  }
+
+  var target = getImageFile(targetPath);
+
+  var results = listCompare(target, images.map((val) => getImageFile(val)).toList());
+
+  for (var i = 0; i < images.length; i++) {
+    printResult(targetPath, images[i], results[i]);
+  }
+}
+
+void printResult(String image1, String image2, double result) {
+  print('Target: $image1\nOther:  $image2\nResult: $result');
+  print('-----------------------------------');
 }

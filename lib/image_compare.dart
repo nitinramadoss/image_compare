@@ -13,19 +13,20 @@ double compareImages(Image src1, Image src2, [Algorithm? algorithm]) {
 }
 
 /// Compare [target] to each image present in [images] using a
-/// specified [algorithm]. 
+/// specified [algorithm].
 /// Returns a list of doubles corresponding to the compare
 /// output for each pair of input: [target] and images[i].
 /// Output is in the same order as [images].
-/// 
+///
 /// If [algorithm] is not specified, the default (PixelMatching())
 /// will be supplied.
-List<double> listCompare(Image target, List<Image> images, [Algorithm? algorithm]) {
+List<double> listCompare(Image target, List<Image> images,
+    [Algorithm? algorithm]) {
   algorithm ??= PixelMatching(); //default algorithm
   var results = <double>[];
 
-  images.forEach((element) => 
-            results.add(compareImages(target, element, algorithm)));
+  images.forEach(
+      (element) => results.add(compareImages(target, element, algorithm)));
 
   return results;
 }
