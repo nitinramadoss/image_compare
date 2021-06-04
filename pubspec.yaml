@@ -17,3 +17,7 @@ dev_dependencies:
 
 assets:
   - assets/
+  - assets/drawings/
+  - assets/animals/
+  - assets/objects/
+  
