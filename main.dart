@@ -4,16 +4,24 @@ import 'package:image_compare/image_compare.dart';
 import 'dart:io';
 
 void main(List<String> arguments) {
-  var dir = 'images/animals/';
-  var target = 'images/animals/bunny.jpg';
+  var dirPath = 'images/animals/';
+  var targetPath = 'images/animals/bunny.jpg';
 
-  compareImageToDirectory(ChiSquareDistanceHistogram(), dir, target);
+  compareImageToDirectory(ChiSquareDistanceHistogram(), dirPath, targetPath);
+  
+  compareImageToImage(PixelMatching(), targetPath, targetPath);
 }
 
 Image getImageFile(String path) {
   var imageFile1 = File(path).readAsBytesSync();
 
   return decodeImage(imageFile1)!;
+}
+
+void compareImageToImage(Algorithm algorithm, String targetPath, String otherPath) {
+  var result = compareImages(getImageFile(targetPath), getImageFile(otherPath), algorithm);
+
+  printResult(algorithm, targetPath, otherPath, (result * 100).toStringAsFixed(3));
 }
 
 void compareImageToDirectory(Algorithm algorithm, String dirName, 
