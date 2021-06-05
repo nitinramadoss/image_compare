@@ -96,7 +96,7 @@ abstract class DirectAlgorithm extends Algorithm {
     // Delegates pixel extraction to parent
     super.compare(src1, src2);
 
-    return 1.0;
+    return 0.0;
   }
 }
 
@@ -283,15 +283,16 @@ class IMED extends DirectAlgorithm {
 
 /// Abstract class for all hash alogrithms
 abstract class HashAlgorithm extends Algorithm {
-  // Delegates pixel extraction to parent
   @override
   double compare(Image src1, Image src2) {
+    // Delegates pixel extraction to parent
     super.compare(src1, src2);
+
     return 0.0; //default return
   }
 
   /// Helper function used by subclasses to return hamming distance between two hashes
-  double hammingDistace(String str1, String str2) {
+  double _hammingDistace(String str1, String str2) {
     var distCounter = 0;
     for (var i = 0; i < str1.length; i++) {
       distCounter += str1[i] != str2[i] ? 1 : 0;
@@ -315,7 +316,7 @@ class PerceptualHash extends HashAlgorithm {
     var hash1 = calcPhash(_pixelListPair.item1);
     var hash2 = calcPhash(_pixelListPair.item2);
 
-    return hammingDistace(hash1, hash2); 
+    return _hammingDistace(hash1, hash2); 
   }
 
   /// Helper function which computes a binary hash of a [List] of [Pixel]
@@ -421,7 +422,7 @@ class AverageHash extends HashAlgorithm {
     var hash1 = calcAvg(_pixelListPair.item1);
     var hash2 = calcAvg(_pixelListPair.item2);
 
-    return super.hammingDistace(hash1, hash2);
+    return _hammingDistace(hash1, hash2);
   }
 
   String calcAvg(List pixelList) {
@@ -458,7 +459,7 @@ class MedianHash extends HashAlgorithm {
     var hash2 = calcMedian(_pixelListPair.item2);
 
     // Delegates hamming distance computation to parent
-    return super.hammingDistace(hash1, hash2);
+    return _hammingDistace(hash1, hash2);
   }
 
   /// Helper funciton to compute median binary hash for an image
