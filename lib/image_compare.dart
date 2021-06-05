@@ -183,7 +183,7 @@ class PixelMatching extends DirectAlgorithm {
       }
     }
 
-    return count / numPixels; // fraction similarity
+    return 1 - (count / numPixels);
   }
 
   bool _withinRange(var delta, var value, var target) {
@@ -254,7 +254,7 @@ class IMED extends DirectAlgorithm {
       }
     }
 
-    return sum / gaussNorm; // percentage difference
+    return sum / gaussNorm;
   }
 
   /// Helper function to return grayscale value of a pixel
@@ -290,7 +290,7 @@ abstract class HashAlgorithm extends Algorithm {
     return 0.0; //default return
   }
 
-  // Helper function used by subclasses to return hamming distance between two hashes
+  /// Helper function used by subclasses to return hamming distance between two hashes
   double hammingDistace(String str1, String str2) {
     var distCounter = 0;
     for (var i = 0; i < str1.length; i++) {
@@ -315,8 +315,7 @@ class PerceptualHash extends HashAlgorithm {
     var hash1 = calcPhash(_pixelListPair.item1);
     var hash2 = calcPhash(_pixelListPair.item2);
 
-    return super.hammingDistace(hash1,
-        hash2); //super class hamming distance method to return a value between 0-1
+    return hammingDistace(hash1, hash2); 
   }
 
   /// Helper function which computes a binary hash of a [List] of [Pixel]
@@ -331,6 +330,7 @@ class PerceptualHash extends HashAlgorithm {
     for (var y = 0; y < _size; y++) {
       for (var x = 0; x < _size; x++) {
         var color = data[x][y];
+
         row[x] = getLuminanceRgb(color._red, color._green, color._blue);
       }
       rows[y] = calculateDCT(row);
@@ -626,7 +626,7 @@ class IntersectionHistogram extends HistogramAlgorithm {
         _diff(_histograms.item1.greenHist, _histograms.item2.greenHist) +
         _diff(_histograms.item1.blueHist, _histograms.item2.blueHist);
 
-    return sum / 3; // percentage of [src2] that matches [src1]
+    return 1 - (sum / 3);
   }
 
   /// Helper function to compute difference between two histograms

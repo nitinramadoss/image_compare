@@ -10,9 +10,22 @@ void main(List<String> arguments) {
   var dirPath = 'images/$directory/';
   var targetPath = 'images/$directory/$fileName';
 
+  compareImageToDirectory(PixelMatching(), dirPath, targetPath);
+  compareImageToDirectory(EuclideanColorDistance(), dirPath, targetPath);
   compareImageToDirectory(IMED(), dirPath, targetPath);
-  
-  compareImageToImage(PixelMatching(), targetPath, targetPath);
+
+  fileName = 'bunny.jpg';
+  dirPath = 'images/animals/';
+
+  compareImageToDirectory(IntersectionHistogram(), dirPath, targetPath);
+  compareImageToDirectory(ChiSquareDistanceHistogram(), dirPath, targetPath);
+
+  fileName = 'tiger.jpg';
+  dirPath = 'images/animals/';
+
+  compareImageToDirectory(AverageHash(), dirPath, targetPath);
+  //compareImageToDirectory(PerceptualHash(), dirPath, targetPath);
+  compareImageToDirectory(MedianHash(), dirPath, targetPath);
 }
 
 Image getImageFile(String path) {
