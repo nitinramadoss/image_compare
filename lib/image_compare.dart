@@ -38,12 +38,13 @@ abstract class Algorithm {
   var _pixelListPair;
 
   /// Default constructor gets implicitly called on subclass instantiation
-  Algorithm() {
-    _pixelListPair = Tuple2<List, List>([], []);
-  }
+  Algorithm();
 
   /// Creates lists of [Pixel] for [src1] and [src2] for sub class compare operations
   double compare(Image src1, Image src2) {
+    // Pixel representation of [src1] and [src2]
+    _pixelListPair = Tuple2<List, List>([], []);
+
     // RGB intensities
     var bytes1 = src1.getBytes(format: Format.rgb);
     var bytes2 = src2.getBytes(format: Format.rgb);
@@ -68,7 +69,7 @@ class Pixel {
   final int _green;
 
   Pixel(this._red, this._blue, this._green);
-
+  
   @override
   String toString() {
     return 'red: $_red, blue: $_blue, green: $_green';
@@ -159,6 +160,16 @@ class EuclideanColorDistance extends DirectAlgorithm {
 /// * Compare for exactness (if two images are identical)
 /// * Returns percentage similarity (0.0 - no similarity, 1.0 - 100% similarity)
 class PixelMatching extends DirectAlgorithm {
+  /// Percentage tolerance value between 0.0 and 1.0
+  /// of the range of RGB values, 256, used when directly
+  /// comparing pixels for equivalence.
+  /// 
+  /// A value of 0.05 means that one RGB value can be + or -
+  /// (0.05 * 256) of another RGB value.
+  var tolerance;
+
+  PixelMatching({double this.tolerance = 0.05});
+
   /// Computes overlap between two images's color intensities.
   /// Return value is the fraction similarity e.g. 0.1 means 10%
   @override
@@ -167,8 +178,11 @@ class PixelMatching extends DirectAlgorithm {
     super.compare(src1, src2);
 
     var count = 0;
-    // percentage leniency for pixel comparison
-    var delta = 0.05 * 256;
+    
+    tolerance = (tolerance < 0.0)? 0.0 : tolerance;
+    tolerance = (tolerance > 1.0)? 1.0 : tolerance;
+
+    var delta = tolerance * 256;
 
     var numPixels = _pixelListPair.item1.length;
 
@@ -292,10 +306,14 @@ abstract class HashAlgorithm extends Algorithm {
   }
 
   /// Helper function used by subclasses to return hamming distance between two hashes
-  double _hammingDistace(String str1, String str2) {
+  double _hammingDistance(String str1, String str2) {
     var distCounter = 0;
     for (var i = 0; i < str1.length; i++) {
+      try {
       distCounter += str1[i] != str2[i] ? 1 : 0;
+      } catch (e) {
+        print('src1: ${_pixelListPair.item1.length}\nsrc2: ${_pixelListPair.item2.length}\n${str1.length} ${str2.length}');
+      }
     }
     return pow((distCounter / str1.length), 2).toDouble();
   }
@@ -316,7 +334,7 @@ class PerceptualHash extends HashAlgorithm {
     var hash1 = calcPhash(_pixelListPair.item1);
     var hash2 = calcPhash(_pixelListPair.item2);
 
-    return _hammingDistace(hash1, hash2); 
+    return _hammingDistance(hash1, hash2); 
   }
 
   /// Helper function which computes a binary hash of a [List] of [Pixel]
@@ -422,7 +440,7 @@ class AverageHash extends HashAlgorithm {
     var hash1 = calcAvg(_pixelListPair.item1);
     var hash2 = calcAvg(_pixelListPair.item2);
 
-    return _hammingDistace(hash1, hash2);
+    return _hammingDistance(hash1, hash2);
   }
 
   String calcAvg(List pixelList) {
@@ -459,7 +477,7 @@ class MedianHash extends HashAlgorithm {
     var hash2 = calcMedian(_pixelListPair.item2);
 
     // Delegates hamming distance computation to parent
-    return _hammingDistace(hash1, hash2);
+    return _hammingDistance(hash1, hash2);
   }
 
   /// Helper funciton to compute median binary hash for an image
@@ -501,12 +519,14 @@ abstract class HistogramAlgorithm extends Algorithm {
   /// Default constructor gets implicitly called on subclass instantiation
   HistogramAlgorithm() {
     _binSize = 256;
-    _histograms = Tuple2(RGBHistogram(_binSize), RGBHistogram(_binSize));
   }
 
   /// Fills color intensity histograms for child class compare operations
   @override
   double compare(Image src1, Image src2) {
+    // RGB histograms for [src1] and [src2]
+    _histograms = Tuple2(RGBHistogram(_binSize), RGBHistogram(_binSize));
+
     // Delegates pixel extraction to parent
     super.compare(src1, src2);
 

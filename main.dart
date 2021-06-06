@@ -12,7 +12,7 @@ void main(List<String> arguments) {
   compareImageToDirectory(IMED(), dirPath, targetPath);
 
   dirPath = 'images/animals/';
-  targetPath = '${dirPath}bunny.jpg';
+  targetPath = '${dirPath}koala.jpg';
 
   compareImageToDirectory(IntersectionHistogram(), dirPath, targetPath);
   compareImageToDirectory(ChiSquareDistanceHistogram(), dirPath, targetPath);
@@ -21,7 +21,7 @@ void main(List<String> arguments) {
   targetPath = '${dirPath}deer.jpg';
 
   compareImageToDirectory(AverageHash(), dirPath, targetPath);
-  //compareImageToDirectory(PerceptualHash(), dirPath, targetPath);
+  compareImageToDirectory(PerceptualHash(), dirPath, targetPath);
   compareImageToDirectory(MedianHash(), dirPath, targetPath);
 }
 
