@@ -224,6 +224,20 @@ class PixelMatching extends DirectAlgorithm {
 /// * Compare for ~exactness (if two images are roughly identical)
 /// * Returns percentage difference (0.0 - no difference, 1.0 - 100% difference)
 class IMED extends DirectAlgorithm {
+  /// Width parameter of the guassian function
+  var sigma;
+  
+  /// Percentage of the smaller image dimension
+  /// representing the bounding box width used for the gaussian blur.
+  /// 
+  /// The larger this percentage is, the larger the gaussian blur is.
+  /// 
+  /// Note: Large [boxPercentage] values can lead to a long computation time
+  /// for comparisons.
+  var boxPercentage;
+
+  IMED({double this.sigma = 1, double this.boxPercentage = 0.005});
+
   /// Computes distance between two images
   /// using image euclidean distance
   @override
@@ -234,11 +248,9 @@ class IMED extends DirectAlgorithm {
     var sum = 0.0;
     var gaussNorm = 0.0; // factor to divide by to normalize
 
-    final SRC_PERCENTAGE = 0.005;
     final smallerDim = (src1.width < src1.height) ? src1.width : src1.height;
 
-    final sigma = SRC_PERCENTAGE * smallerDim;
-    final offset = (sigma).ceil();
+    final offset = (boxPercentage * smallerDim).ceil();
     final len = 1 + offset * 2;
 
     for (var i = 0; i < _pixelListPair.item1.length; i++) {
