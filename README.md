@@ -1,5 +1,5 @@
 # image_compare
-### Comparing images for similarity
+### Comparing images for difference
 #### Simple, extensible dart package
 
 ![alt text](https://github.com/nitinramadoss/image_compare/blob/main/images/seven2.PNG) ![alt text](https://github.com/nitinramadoss/image_compare/blob/main/images/seven.PNG)
@@ -44,6 +44,9 @@ var result = compareImages(a, b, IntersectionHistogram())
 ```
 
 ## Algorithm Specifics: 
+#### Note: 
+  *All algorithms return percentage difference (0.0 - no difference, 1.0 - 100% difference), but their meanings are different*
+  
 ### ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) `PixelMatching()`
 
 #### About
@@ -51,8 +54,8 @@ var result = compareImages(a, b, IntersectionHistogram())
  - Best with images of similar aspect ratios and dimensions
  - Compare for exactness (if two images are identical)
 
-#### Returns
- - Returns percentage similarity (0.0 - no similarity, 1.0 - 100% similarity)
+#### Result
+ - Percentage of pixels that do not have overlapping RGB values between the images
 
 ### ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) `EuclideanColorDistance()`
 
@@ -61,8 +64,8 @@ var result = compareImages(a, b, IntersectionHistogram())
  - Best with images of similar aspect ratios and dimensions
  - Compare for exactness (if two images are identical)
 
-#### Returns
- - Returns percentage difference (0.0 - no difference, 1.0 - 100% difference)
+#### Result
+ - Sum of euclidean distances between each pixel (RGB value), bounded by the maximum distance possible given two images.
 
 ### ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) `IMED()`
 *Source: https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.680.2097&rep=rep1&type=pdf*
@@ -73,9 +76,9 @@ var result = compareImages(a, b, IntersectionHistogram())
  - Best with images of similar aspect ratios and dimensions
  - Compare for ~exactness (if two images are roughly identical)
 
-#### Returns
- - Returns percentage difference (0.0 - no difference, 1.0 - 100% difference)
-
+#### Result
+ - Sum of image euclidean distances between each pixel (RGB value), bounded by the maximum distance possible given two images.
+ 
 ### ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) `ChiSquareDistanceHistogram()`
 
 #### About
@@ -83,8 +86,8 @@ var result = compareImages(a, b, IntersectionHistogram())
  - Works with images of all aspect ratios and dimensions
  - Compare for similarity (if two images are similar based on their color distribution)
 
-#### Returns
- - Returns percentage difference (0.0 - no difference, 1.0 - 100% difference)
+#### Result
+ - Chi square distance between the normalized color distributions of two images
 
 ### ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) `IntersectionHistogram()`
 
@@ -93,7 +96,5 @@ var result = compareImages(a, b, IntersectionHistogram())
  - Works with images of all aspect ratios and dimensions
  - Compare for similarity (if two images are similar based on their color distribution)
 
-#### Returns
- - Returns percentage similarity (0.0 - no similarity, 1.0 - 100% similarity)
-
-
+#### Result
+ - Differences between the normalized color distributions of two images
