@@ -18,18 +18,18 @@ import 'package:image_compare/image_compare.dart';
 
 ## Classes:
 **Pixel Comparison Algorithms**
-- [Pixel Matching](https://github.com/nitinramadoss/image_compare#-pixelmatching) `PixelMatching()`
-- [Euclidean Color Distance](https://github.com/nitinramadoss/image_compare#-euclideancolordistance) `EuclideanColorDistance()`
-- [IMage Euclidean Distance](https://github.com/nitinramadoss/image_compare#-imed) `IMED()`
+- [Pixel Matching](#pixelmatching) `PixelMatching()`
+- [Euclidean Color Distance](#euclideancolordistance) `EuclideanColorDistance()`
+- [IMage Euclidean Distance](#imed) `IMED()`
 
 **Histogram Comparison Algorithms**
-- [Chi Square Distance](https://github.com/nitinramadoss/image_compare#-chisquaredistancehistogram) `ChiSquareDistanceHistogram()`
-- [Intersection](https://github.com/nitinramadoss/image_compare#-intersectionhistogram) `IntersectionHistogram()`
+- [Chi Square Distance](#chisquaredistancehistogram) `ChiSquareDistanceHistogram()`
+- [Intersection](#intersectionhistogram) `IntersectionHistogram()`
 
 **Hashing Comparison Algorithms**
-- [Perceptual](https://github.com/nitinramadoss/image_compare#-perceptualhash) `PerceptualHash()`
-- [Average](https://github.com/nitinramadoss/image_compare#-averagehash) `AverageHash()`
-- [Median](https://github.com/nitinramadoss/image_compare#-medianhash) `MedianHash()`
+- [Perceptual](#perceptualhash) `PerceptualHash()`
+- [Average](#averagehash) `AverageHash()`
+- [Median](#medianhash) `MedianHash()`
 
 ## Implementation:
 1. Initialize two images from the dart image class 
