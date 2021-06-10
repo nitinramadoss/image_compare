@@ -16,19 +16,20 @@ Import:
 import 'package:image_compare/image_compare.dart';
 ```
 
-## Features:
+## Classes:
 **Pixel Comparison Algorithms**
-- Pixel matching ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) `PixelMatching()`
-- Euclidean Color Distance ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) `EuclideanColorDistance()`
-- IMage Euclidean Distance (IMED) ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) `IMED()`
+- [Pixel Matching](https://github.com/nitinramadoss/image_compare#-pixelmatching) `PixelMatching()`
+- [Euclidean Color Distance](https://github.com/nitinramadoss/image_compare#-euclideancolordistance) `EuclideanColorDistance()`
+- [IMage Euclidean Distance](https://github.com/nitinramadoss/image_compare#-imed) `IMED()`
 
 **Histogram Comparison Algorithms**
-- Chi Square Distance ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) `ChiSquareDistanceHistogram()`
-- Intersection ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) `IntersectionHistogram()`
+- [Chi Square Distance](https://github.com/nitinramadoss/image_compare#-chisquaredistancehistogram) `ChiSquareDistanceHistogram()`
+- [Intersection](https://github.com/nitinramadoss/image_compare#-intersectionhistogram) `IntersectionHistogram()`
 
 **Hashing Comparison Algorithms**
-- Average ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) `AverageHash()`
-- Median ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) `MedianHash()`
+- [Perceptual](https://github.com/nitinramadoss/image_compare#-perceptualhash) `PerceptualHash()`
+- [Average](https://github.com/nitinramadoss/image_compare#-averagehash) `AverageHash()`
+- [Median](https://github.com/nitinramadoss/image_compare#-medianhash) `MedianHash()`
 
 ## Implementation:
 1. Initialize two images from the dart image class 
@@ -37,7 +38,7 @@ import 'package:image_compare/image_compare.dart';
 Image a = Image.fromBytes(width, height, bytes1);
 Image b = Image.fromBytes(width, height, bytes2);
 ```
-2. Select an algorithm (from features section). The default is ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) `PixelMatching()`
+2. Select an algorithm (from features section). The default is `PixelMatching()`
 3. Compare the images:
 ```
 var result = compareImages(a, b, IntersectionHistogram())
@@ -47,7 +48,7 @@ var result = compareImages(a, b, IntersectionHistogram())
 #### Note: 
   *All algorithms return percentage difference (0.0 - no difference, 1.0 - 100% difference), but their meanings are different*
   
-### ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) `PixelMatching()`
+### `PixelMatching()`
 
 #### About
  - Images are resized to the same dimensions (if dimensions don't match) and each [src1] pixel's RGB value is checked to see if it falls within 5% (of 256) of [src2] pixel's RGB value.
@@ -57,7 +58,7 @@ var result = compareImages(a, b, IntersectionHistogram())
 #### Result
  - Percentage of pixels that do not have overlapping RGB values between the images
 
-### ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) `EuclideanColorDistance()`
+### `EuclideanColorDistance()`
 
 #### About
  - Images are resized to the same dimensions (if dimensions don't match) and euclidean difference between [src1] RGB values and [src2] RGB values for each pixel is summed.
@@ -67,7 +68,7 @@ var result = compareImages(a, b, IntersectionHistogram())
 #### Result
  - Sum of euclidean distances between each pixel (RGB value), bounded by the maximum distance possible given two images.
 
-### ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) `IMED()`
+### `IMED()`
 *Source: https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.680.2097&rep=rep1&type=pdf*
 
 #### About
@@ -79,7 +80,7 @@ var result = compareImages(a, b, IntersectionHistogram())
 #### Result
  - Sum of image euclidean distances between each pixel (RGB value), bounded by the maximum distance possible given two images.
  
-### ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) `ChiSquareDistanceHistogram()`
+### `ChiSquareDistanceHistogram()`
 
 #### About
  - Images are converted to histogram representations (x-axis intensity, y-axis frequency). The chi-square distance formula is applied to compute the distance between each of the 256 bins. There are three histograms per image (RGB histograms).  
@@ -89,7 +90,7 @@ var result = compareImages(a, b, IntersectionHistogram())
 #### Result
  - Chi square distance between the normalized color distributions of two images
 
-### ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) `IntersectionHistogram()`
+### `IntersectionHistogram()`
 
 #### About
  - Images are converted to histogram representations (x-axis intensity, y-axis frequency). Histograms are overlayed to calculate percentage overlap. There are three histograms per image (RGB histograms).  
@@ -98,3 +99,23 @@ var result = compareImages(a, b, IntersectionHistogram())
 
 #### Result
  - Differences between the normalized color distributions of two images
+
+### `PerceptualHash()`
+
+#### About
+
+#### Result
+
+### `AverageHash()`
+
+#### About
+
+#### Result
+
+### `MedianHash()`
+
+#### About
+
+#### Result
+
+
