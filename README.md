@@ -72,7 +72,7 @@ var result = compareImages(a, b, IntersectionHistogram())
 *Source: https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.680.2097&rep=rep1&type=pdf*
 
 #### About
- - Images are resized to the same dimensions (if dimensions don't match) and are grayscaled. A gaussian blur is applied when calculating distance between pixel intensities.    Spatial relationship is taken into account within the guassian function to reduce the effect of minor perturbations (ignores minor differences). 
+ - Images are resized to the same dimensions (if dimensions don't match) and are grayscaled. A gaussian blur is applied when calculating distance between pixel intensities.    Spatial relationship is taken into account within the gaussian function to reduce the effect of minor perturbations (ignores minor differences). 
  - Gaussian blur has been modified: area decreased (Note)
  - Best with images of similar aspect ratios and dimensions
  - Compare for ~exactness (if two images are roughly identical)
@@ -112,6 +112,9 @@ var result = compareImages(a, b, IntersectionHistogram())
 ### `AverageHash()`
 
 #### About
+- This is a hash algorithm based on the implementation described on [HackerFactor article](https://hackerfactor.com/blog/index.php%3F/archives/432-Looks-Like-It.html)
+- Works by taking the average of all the grayscaled pixels and cross checking with the actual intensity value of the pixel.
+- The hash produced by this process is used in the hamming distance function to compare with another hash to find similar images.
 
 #### Result
 
