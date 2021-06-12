@@ -117,11 +117,14 @@ var result = compareImages(a, b, IntersectionHistogram())
 - The hash produced by this process is used in the hamming distance function to compare with another hash to find similar images.
 
 #### Result
+- Returns percent difference based on the hamming distance. 0.0 for no difference and 100.0 for complete difference.
 
 ### `MedianHash()`
 
 #### About
-
+- This is a hash algorithm based on the implementation described on [Content-Blockchain article](https://content-blockchain.org/research/testing-different-image-hash-functions/)
+- Works by taking the median of all the grayscaled pixels and cross checking with the actual intensity value of the pixel.
+- Conceptually similar to average hash except uses median.
+- The hash produced by this process is used in the hamming distance function to compare with another hash to find similar images.
 #### Result
-
-
+- Returns percent difference based on the hamming distance. 0.0 for no difference and 100.0 for complete difference.
