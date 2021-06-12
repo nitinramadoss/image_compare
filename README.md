@@ -103,8 +103,11 @@ var result = compareImages(a, b, IntersectionHistogram())
 ### `PerceptualHash()`
 
 #### About
+- Simple implementation based on [HackerFactor article](https://hackerfactor.com/blog/index.php%3F/archives/432-Looks-Like-It.html)
+- This algorithm works great for images as described by phash.org "copyright protection, similarity search for media files, or even digital forensics". From our testing we also found it works great with pictures that have subjects inside and minimal white space.
 
 #### Result
+- Returns percent difference based on the hamming distance. 0.0 for no difference and 100.0 for complete difference.
 
 ### `AverageHash()`
 
