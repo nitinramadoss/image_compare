@@ -93,7 +93,7 @@ var result = compareImages(a, b, IntersectionHistogram())
 ### `IntersectionHistogram()`
 
 #### About
- - Images are converted to histogram representations (x-axis intensity, y-axis frequency). Histograms are overlayed to calculate percentage overlap. There are three histograms per image (RGB histograms).  
+ - Images are converted to histogram representations (x-axis intensity, y-axis frequency). Histograms are overlaid to calculate percentage overlap. There are three histograms per image (RGB histograms).  
  - Works with images of all aspect ratios and dimensions
  - Compare for similarity (if two images are similar based on their color distribution)
 
