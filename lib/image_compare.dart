@@ -158,7 +158,7 @@ class EuclideanColorDistance extends DirectAlgorithm {
 ///
 /// * Best with images of similar aspect ratios and dimensions
 /// * Compare for exactness (if two images are identical)
-/// * Returns percentage similarity (0.0 - no similarity, 1.0 - 100% similarity)
+/// * Returns percentage diffence (0.0 - no difference, 1.0 - 100% difference)
 class PixelMatching extends DirectAlgorithm {
   /// Percentage tolerance value between 0.0 and 1.0
   /// of the range of RGB values, 256, used when directly
@@ -321,21 +321,24 @@ abstract class HashAlgorithm extends Algorithm {
   double _hammingDistance(String str1, String str2) {
     var distCounter = (str1.length - str2.length).abs();
     var smaller = min(str1.length, str2.length);
+
     for (var i = 0; i < smaller; i++) {
-      try {
         distCounter += str1[i] != str2[i] ? 1 : 0;
-      } catch (e) {
-        print(
-            'src1: ${_pixelListPair.item1.length}\nsrc2: ${_pixelListPair.item2.length}\n${str1.length} ${str2.length}');
-      }
     }
+
     return pow((distCounter / str1.length), 2).toDouble();
   }
 }
 
 /// Algorithm class for comparing images with the perceptual hash method based on https://github.com/freearhey/phash-js.
-/// Images are resized to 32x32 grayscaled and then goes through a 1-Dimension Discrete Cosine Transformation.
-/// The top 8x8 is taken as it give the generalized frequency of the image. With this creates a hash.
+/// Images are grayscaled and resized to 32x32. Then they are passed through a 1-dimension discrete cosine transformation.
+/// The top 8x8 is only accounted for since it gives the generalized frequency of the image. With this, a hash is created.
+/// 
+/// 
+/// * Applications in digital forensics, copyright protection, and media file search
+/// * Works well with images of any dimension and aspect ratio
+/// * Comparing image fingerprints  
+/// * Images can be rotated
 /// * Returns percentage diffence (0.0 - no difference, 1.0 - 100% difference)
 class PerceptualHash extends HashAlgorithm {
   final int _size = 32;
@@ -448,9 +451,14 @@ class PerceptualHash extends HashAlgorithm {
 }
 
 /// Algorithm class for comparing images using average values of pixels.
+/// 
 /// Images are resized and grayscaled.
-/// Afterwards finds the average pixel value by getting the sum of all pixel values and dividing  by total amount of pixels.
-/// Then each pixel is checked against the actual value and average value. A binary string is created  which is converted to a hex hash.
+/// Afterwards, this algorithm finds the average pixel value by getting the sum of all pixel values and dividing  by total number of pixels.
+/// Then, each pixel is checked against the actual value and average value. A binary string is created  which is converted to a hex hash.
+/// 
+/// * Work well with images of any dimension and aspect ratio
+/// * Comparing image fingerprints  
+/// * Images can be rotated
 /// * Returns percentage diffence (0.0 - no difference, 1.0 - 100% difference)
 class AverageHash extends HashAlgorithm {
   @override
@@ -490,9 +498,14 @@ class AverageHash extends HashAlgorithm {
 }
 
 /// Algorithm class for comparing images using average values of pixels.
+/// 
 /// Images are resized and grayscaled.
-/// Afterwards finds the median pixel value.
-/// Then each pixel is checked against the actual value and median value. A binary string is created  which is converted to a hex hash.
+/// Afterwards, this algorithm finds the median pixel value.
+/// Then, each pixel is checked against the actual value and median value. A binary string is created and converted to a hex hash.
+/// 
+/// * Works well with images of any dimension and aspect ratio
+/// * Comparing image fingerprints  
+/// * Images can be rotated
 /// * Returns percentage diffence (0.0 - no difference, 1.0 - 100% difference)
 class MedianHash extends HashAlgorithm {
   @override
@@ -607,7 +620,7 @@ class RGBHistogram {
 ///
 /// Number of histograms bins is 256. Three histograms represent RGB distributions.
 ///
-/// * Works with images of all aspect ratios and dimensions
+/// * Works well with images of all aspect ratios and dimensions
 /// * Compare for similarity (if two images are similar based on their color distribution)
 /// * Returns percentage difference (0.0 - no difference, 1.0 - 100% difference)
 class ChiSquareDistanceHistogram extends HistogramAlgorithm {
@@ -660,9 +673,10 @@ class ChiSquareDistanceHistogram extends HistogramAlgorithm {
 ///
 /// Number of histograms bins is 256. Three histograms represent RGB distributions.
 ///
-/// * Best with images of similar aspect ratios and dimensions
+/// * Works well with images of any aspect ratio and dimension
+/// * Images can be rotated
 /// * Compare for similarity (if two images are similar based on their color distribution)
-/// * Returns percentage similarity (0.0 - no similarity, 1.0 - 100% similarity)
+/// * Returns percentage diffence (0.0 - no difference, 1.0 - 100% difference)
 class IntersectionHistogram extends HistogramAlgorithm {
   /// Calculates histogram similarity using standard intersection
   @override
