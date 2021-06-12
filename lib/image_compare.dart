@@ -333,7 +333,10 @@ abstract class HashAlgorithm extends Algorithm {
   }
 }
 
-/// Algorithm class for comparing images with the perceptual hash method based on https://github.com/freearhey/phash-js
+/// Algorithm class for comparing images with the perceptual hash method based on https://github.com/freearhey/phash-js.
+/// Images are resized to 32x32 grayscaled and then goes through a 1-Dimension Discrete Cosine Transformation.
+/// The top 8x8 is taken as it give the generalized frequency of the image. With this creates a hash.
+/// * Returns percentage diffence (0.0 - no difference, 1.0 - 100% difference)
 class PerceptualHash extends HashAlgorithm {
   final int _size = 32;
 
@@ -444,19 +447,26 @@ class PerceptualHash extends HashAlgorithm {
   }
 }
 
+/// Algorithm class for comparing images using average values of pixels.
+/// Images are resized and grayscaled.
+/// Afterwards finds the average pixel value by getting the sum of all pixel values and dividing  by total amount of pixels.
+/// Then each pixel is checked against the actual value and average value. A binary string is created  which is converted to a hex hash.
+/// * Returns percentage diffence (0.0 - no difference, 1.0 - 100% difference)
 class AverageHash extends HashAlgorithm {
   @override
   double compare(Image src1, Image src2) {
-    src1 = copyResize(grayscale(src1), height: 9, width: 8);
-    src2 = copyResize(grayscale(src2), height: 9, width: 8);
+    src1 = copyResize(grayscale(src1), height: 8, width: 8);
+    src2 = copyResize(grayscale(src2), height: 8, width: 8);
     // Delegates image resizing to parent
     super.compare(src1, src2);
     var hash1 = calcAvg(_pixelListPair.item1);
     var hash2 = calcAvg(_pixelListPair.item2);
 
+    // Delegates hamming distance computation to parent
     return _hammingDistance(hash1, hash2);
   }
 
+  /// Helper funciton to compute average hex hash for an image
   String calcAvg(List pixelList) {
     var srcArray = pixelList.map((e) => e._red).toList();
 
@@ -479,6 +489,11 @@ class AverageHash extends HashAlgorithm {
   }
 }
 
+/// Algorithm class for comparing images using average values of pixels.
+/// Images are resized and grayscaled.
+/// Afterwards finds the median pixel value.
+/// Then each pixel is checked against the actual value and median value. A binary string is created  which is converted to a hex hash.
+/// * Returns percentage diffence (0.0 - no difference, 1.0 - 100% difference)
 class MedianHash extends HashAlgorithm {
   @override
   double compare(Image src1, Image src2) {
@@ -494,7 +509,7 @@ class MedianHash extends HashAlgorithm {
     return _hammingDistance(hash1, hash2);
   }
 
-  /// Helper funciton to compute median binary hash for an image
+  /// Helper funciton to compute median hex hash for an image
   String calcMedian(List pixelList) {
     var srcArray = pixelList.map((e) => e._red).toList();
     var tempArr = List.from(srcArray);
