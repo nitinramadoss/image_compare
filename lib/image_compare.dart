@@ -69,7 +69,7 @@ class Pixel {
   final int _green;
 
   Pixel(this._red, this._blue, this._green);
-  
+
   @override
   String toString() {
     return 'red: $_red, blue: $_blue, green: $_green';
@@ -163,7 +163,7 @@ class PixelMatching extends DirectAlgorithm {
   /// Percentage tolerance value between 0.0 and 1.0
   /// of the range of RGB values, 256, used when directly
   /// comparing pixels for equivalence.
-  /// 
+  ///
   /// A value of 0.05 means that one RGB value can be + or -
   /// (0.05 * 256) of another RGB value.
   var tolerance;
@@ -178,9 +178,9 @@ class PixelMatching extends DirectAlgorithm {
     super.compare(src1, src2);
 
     var count = 0;
-    
-    tolerance = (tolerance < 0.0)? 0.0 : tolerance;
-    tolerance = (tolerance > 1.0)? 1.0 : tolerance;
+
+    tolerance = (tolerance < 0.0) ? 0.0 : tolerance;
+    tolerance = (tolerance > 1.0) ? 1.0 : tolerance;
 
     var delta = tolerance * 256;
 
@@ -226,12 +226,12 @@ class PixelMatching extends DirectAlgorithm {
 class IMED extends DirectAlgorithm {
   /// Width parameter of the guassian function
   var sigma;
-  
+
   /// Percentage of the smaller image dimension
   /// representing the bounding box width used for the gaussian blur.
-  /// 
+  ///
   /// The larger this percentage is, the larger the gaussian blur is.
-  /// 
+  ///
   /// Note: Large [boxPercentage] values can lead to a long computation time
   /// for comparisons.
   var boxPercentage;
@@ -319,12 +319,14 @@ abstract class HashAlgorithm extends Algorithm {
 
   /// Helper function used by subclasses to return hamming distance between two hashes
   double _hammingDistance(String str1, String str2) {
-    var distCounter = 0;
-    for (var i = 0; i < str1.length; i++) {
+    var distCounter = (str1.length - str2.length).abs();
+    var smaller = min(str1.length, str2.length);
+    for (var i = 0; i < smaller; i++) {
       try {
-      distCounter += str1[i] != str2[i] ? 1 : 0;
+        distCounter += str1[i] != str2[i] ? 1 : 0;
       } catch (e) {
-        print('src1: ${_pixelListPair.item1.length}\nsrc2: ${_pixelListPair.item2.length}\n${str1.length} ${str2.length}');
+        print(
+            'src1: ${_pixelListPair.item1.length}\nsrc2: ${_pixelListPair.item2.length}\n${str1.length} ${str2.length}');
       }
     }
     return pow((distCounter / str1.length), 2).toDouble();
@@ -346,7 +348,7 @@ class PerceptualHash extends HashAlgorithm {
     var hash1 = calcPhash(_pixelListPair.item1);
     var hash2 = calcPhash(_pixelListPair.item2);
 
-    return _hammingDistance(hash1, hash2); 
+    return _hammingDistance(hash1, hash2);
   }
 
   /// Helper function which computes a binary hash of a [List] of [Pixel]
