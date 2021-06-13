@@ -18,9 +18,9 @@ import 'package:image_compare/image_compare.dart';
 
 ## Classes:
 **Pixel Comparison Algorithms**
-- [Pixel Matching](#pixelmatching) `PixelMatching({double tolerance = 0.05})`
+- [Pixel Matching](#pixelmatchingdouble-tolerance--005) `PixelMatching({double tolerance = 0.05})`
 - [Euclidean Color Distance](#euclideancolordistance) `EuclideanColorDistance()`
-- [IMage Euclidean Distance](#imed) `IMED({double sigma = 1, double boxPercentage = 0.005})`
+- [IMage Euclidean Distance](#imeddouble-sigma--1-double-boxpercentage--0005) `IMED({double sigma = 1, double boxPercentage = 0.005})`
 
 **Histogram Comparison Algorithms**
 - [Chi Square Distance](#chisquaredistancehistogram) `ChiSquareDistanceHistogram()`
@@ -107,6 +107,7 @@ var result = compareImages(a, b, IntersectionHistogram())
 - Images are grayscaled and resized to 32x32. Then they are passed through a 1-dimension discrete cosine transformation.
 - The top 8x8 is only accounted for since it gives the generalized frequency of the image. With this, a hash is created.
 - This algorithm works great for images as described by phash.org "copyright protection, similarity search for media files, or even digital forensics". From our testing we also found it works great with pictures that have subjects inside and minimal white space.
+- Compare for exactness (if two images are identical)
 
 #### Result
 - Structural differences between two hashed, grayscaled images, more precise than average and median hash
@@ -117,7 +118,8 @@ var result = compareImages(a, b, IntersectionHistogram())
 #### About
 - Images are resized to 8x8 and grayscaled.
 - Works by taking the average of all the grayscaled pixels and cross checking with the actual intensity value of the pixel.
-- The hash produced by this process is used in the hamming distance function to compare with another hash to find similar images.
+- The hash produced by this process is used in the hamming distance function.
+- Compare for exactness (if two images are identical)
 
 #### Result
 - Structural difference between average grayscale distributions after hashing of two images
@@ -129,7 +131,8 @@ var result = compareImages(a, b, IntersectionHistogram())
 - Images are resized to 9x8 and grayscaled.
 - Works by taking the median of all the grayscaled pixels and cross checking with the actual intensity value of the pixel.
 - Conceptually similar to average hash except uses median.
-- The hash produced by this process is used in the hamming distance function to compare with another hash to find similar images.
+- The hash produced by this process is used in the hamming distance function.
+- Compare for exactness (if two images are identical)
 #### Result
 - Structural difference between median grayscale distributions after hashing of two images
 
