@@ -1,3 +1,4 @@
 ## 1.0.0
 
-- Initial version, created by Stagehand
+- Initial version
+- Features 8 unique comparison algorithms

@@ -4,67 +4,36 @@ import 'package:image_compare/image_compare.dart';
 import 'dart:io';
 
 void main(List<String> arguments) {
-  var dirPath = 'images/drawings/';
-  var targetPath = '${dirPath}kolam1.png';
+  var otherPath = 'images/animals/komodo.jpg';
+  var targetPath = 'images/animals/koala.jpg';
 
-  compareImageToDirectory(PixelMatching(), dirPath, targetPath);
-  compareImageToDirectory(EuclideanColorDistance(), dirPath, targetPath);
-  compareImageToDirectory(IMED(), dirPath, targetPath);
+  var src1 = getImageFile(targetPath);
+  var src2 = getImageFile(otherPath);
 
-  dirPath = 'images/animals/';
-  targetPath = '${dirPath}koala.jpg';
+  // Calculate pixel matching with a 10% tolerance
+  var result = compareImages(src1, src2, PixelMatching(tolerance: 0.1));
 
-  compareImageToDirectory(IntersectionHistogram(), dirPath, targetPath);
-  compareImageToDirectory(ChiSquareDistanceHistogram(), dirPath, targetPath);
+  print('Difference: ${result * 100}%');
 
-  dirPath = 'images/animals/';
-  targetPath = '${dirPath}deer.jpg';
+  // Calculate Chi square distance between histograms
+  result = compareImages(src1, src2, ChiSquareDistanceHistogram());
 
-  compareImageToDirectory(AverageHash(), dirPath, targetPath);
-  compareImageToDirectory(PerceptualHash(), dirPath, targetPath);
-  compareImageToDirectory(MedianHash(), dirPath, targetPath);
+  print('Difference: ${result * 100}%');
+
+  var images = [
+    getImageFile('images/animals/deer.jpg'),
+    getImageFile('images/animals/bunny.jpg'),
+    getImageFile('images/animals/tiger.jpg')
+  ];
+
+  // Calculate median hashes between target (src1) and list of images
+  var results = listCompare(src1, images, MedianHash());
+
+  results.forEach((e) => print('Difference: ${e * 100}%'));
 }
 
 Image getImageFile(String path) {
   var imageFile1 = File(path).readAsBytesSync();
 
   return decodeImage(imageFile1)!;
-}
-
-void compareImageToImage(
-    Algorithm algorithm, String targetPath, String otherPath) {
-  var result = compareImages(
-      getImageFile(targetPath), getImageFile(otherPath), algorithm);
-
-  printResult(
-      algorithm, targetPath, otherPath, (result * 100).toStringAsFixed(3));
-}
-
-void compareImageToDirectory(
-    Algorithm algorithm, String dirName, String targetPath) async {
-  var directory = Directory(dirName);
-
-  var images = <String>[];
-
-  await for (var entity
-      in directory.list(recursive: true, followLinks: false)) {
-    images.add(entity.path);
-  }
-
-  var target = getImageFile(targetPath);
-
-  var results = listCompare(
-      target, images.map((val) => getImageFile(val)).toList(), algorithm);
-
-  for (var i = 0; i < images.length; i++) {
-    printResult(algorithm, targetPath, images[i],
-        (results[i] * 100).toStringAsFixed(3));
-  }
-}
-
-void printResult(
-    Algorithm algorithm, String image1, String image2, String result) {
-  print(
-      'Target: $image1\nOther:  $image2\nAlgorithm: ${algorithm.toString()}\nResult: $result% difference');
-  print('-----------------------------------');
 }
