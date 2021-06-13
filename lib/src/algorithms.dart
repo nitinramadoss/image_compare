@@ -440,7 +440,7 @@ class PerceptualHash extends HashAlgorithm {
 
 /// Algorithm class for comparing images using average values of pixels.
 /// 
-/// Images are resized and grayscaled.
+/// Images are resized to 8x8 and grayscaled.
 /// Afterwards, this algorithm finds the average pixel value by getting the sum of all pixel values and dividing  by total number of pixels.
 /// Then, each pixel is checked against the actual value and average value. A binary string is created  which is converted to a hex hash.
 /// 
@@ -488,7 +488,7 @@ class AverageHash extends HashAlgorithm {
 
 /// Algorithm class for comparing images using average values of pixels.
 /// 
-/// Images are resized and grayscaled.
+/// Images are resized to 9x8 and grayscaled.
 /// Afterwards, this algorithm finds the median pixel value.
 /// Then, each pixel is checked against the actual value and median value. A binary string is created and converted to a hex hash.
 /// 
