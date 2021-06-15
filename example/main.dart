@@ -1,39 +1,46 @@
-import 'package:image/image.dart';
-
 import 'package:image_compare/image_compare.dart';
-import 'dart:io';
 
-void main(List<String> arguments) {
+void main(List<String> arguments) async {
   var otherPath = '../images/animals/komodo.jpg';
   var targetPath = '../images/animals/koala.jpg';
 
-  var src1 = getImageFile(targetPath);
-  var src2 = getImageFile(otherPath);
-
   // Calculate pixel matching with a 10% tolerance
-  var result = compareImages(src1, src2, PixelMatching(tolerance: 0.1));
+  var networkResult = await compareImages(
+    'https://c.files.bbci.co.uk/12A9B/production/_111434467_gettyimages-1143489763.jpg',
+    'https://c.files.bbci.co.uk/12A9B/production/_111434467_gettyimages-1143489763.jpg',
+    PerceptualHash(),
+  );
 
-  print('Difference: ${result * 100}%');
+  print('Difference: ${networkResult * 100}%');
 
-  // Calculate Chi square distance between histograms
-  result = compareImages(src1, src2, ChiSquareDistanceHistogram());
+  var assetResult = await compareImages(
+    otherPath,
+    targetPath,
+  );
+  print('Difference: ${assetResult * 100}%');
 
-  print('Difference: ${result * 100}%');
-
-  var images = [
-    getImageFile('../images/animals/deer.jpg'),
-    getImageFile('../images/animals/bunny.jpg'),
-    getImageFile('../images/animals/tiger.jpg')
+  var assetImages = [
+    '../images/animals/deer.jpg',
+    '../images/animals/bunny.jpg',
+    '../images/animals/tiger.jpg'
+  ];
+  var networkImages = [
+    'https://c.files.bbci.co.uk/12A9B/production/_111434467_gettyimages-1143489763.jpg',
+    'https://c.files.bbci.co.uk/12A9B/production/_111434467_gettyimages-1143489763.jpg',
+    'https://c.files.bbci.co.uk/12A9B/production/_111434467_gettyimages-1143489763.jpg',
+    'https://c.files.bbci.co.uk/12A9B/production/_111434467_gettyimages-1143489763.jpg',
   ];
 
   // Calculate median hashes between target (src1) and list of images
-  var results = listCompare(src1, images, MedianHash());
+  var results = await listCompare(otherPath, assetImages, MedianHash());
 
   results.forEach((e) => print('Difference: ${e * 100}%'));
-}
 
-Image getImageFile(String path) {
-  var imageFile1 = File(path).readAsBytesSync();
+  results = await listCompare(
+    'https://c.files.bbci.co.uk/12A9B/production/_111434467_gettyimages-1143489763.jpg',
+    networkImages,
+    MedianHash(),
+  );
 
-  return decodeImage(imageFile1)!;
+  results.forEach((e) => print('Difference: ${e * 100}%'));
 }
