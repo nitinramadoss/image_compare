@@ -293,23 +293,23 @@ abstract class HashAlgorithm extends Algorithm {
   double _hammingDistance(String str1, String str2) {
     var distCounter = (str1.length - str2.length).abs();
     var smaller = min(str1.length, str2.length);
-
+    var larger = max(str1.length, str2.length);
     for (var i = 0; i < smaller; i++) {
-        distCounter += str1[i] != str2[i] ? 1 : 0;
+      distCounter += str1[i] != str2[i] ? 1 : 0;
     }
 
-    return pow((distCounter / str1.length), 2).toDouble();
+    return pow((distCounter / larger), 2).toDouble();
   }
 }
 
 /// Algorithm class for comparing images with the perceptual hash method based on https://github.com/freearhey/phash-js.
 /// Images are grayscaled and resized to 32x32. Then they are passed through a 1-dimension discrete cosine transformation.
 /// The top 8x8 is only accounted for since it gives the generalized frequency of the image. With this, a hash is created.
-/// 
-/// 
+///
+///
 /// * Applications in digital forensics, copyright protection, and media file search
 /// * Works well with images of any dimension and aspect ratio
-/// * Comparing image fingerprints  
+/// * Comparing image fingerprints
 /// * Images can be rotated
 /// * Returns percentage diffence (0.0 - no difference, 1.0 - 100% difference)
 class PerceptualHash extends HashAlgorithm {
@@ -320,7 +320,7 @@ class PerceptualHash extends HashAlgorithm {
   double compare(Image src1, Image src2) {
     src1 = copyResize(grayscale(src1), height: 32, width: 32);
     src2 = copyResize(grayscale(src2), height: 32, width: 32);
-    
+
     super.compare(src1, src2);
 
     var hash1 = calcPhash(_pixelListPair.item1);
@@ -439,13 +439,13 @@ class PerceptualHash extends HashAlgorithm {
 }
 
 /// Algorithm class for comparing images using average values of pixels.
-/// 
+///
 /// Images are resized to 8x8 and grayscaled.
 /// Afterwards, this algorithm finds the average pixel value by getting the sum of all pixel values and dividing  by total number of pixels.
 /// Then, each pixel is checked against the actual value and average value. A binary string is created  which is converted to a hex hash.
-/// 
+///
 /// * Work well with images of any dimension and aspect ratio
-/// * Comparing image fingerprints  
+/// * Comparing image fingerprints
 /// * Images can be rotated
 /// * Returns percentage diffence (0.0 - no difference, 1.0 - 100% difference)
 class AverageHash extends HashAlgorithm {
@@ -453,7 +453,7 @@ class AverageHash extends HashAlgorithm {
   double compare(Image src1, Image src2) {
     src1 = copyResize(grayscale(src1), height: 8, width: 8);
     src2 = copyResize(grayscale(src2), height: 8, width: 8);
-    
+
     super.compare(src1, src2);
 
     var hash1 = calcAvg(_pixelListPair.item1);
@@ -487,13 +487,13 @@ class AverageHash extends HashAlgorithm {
 }
 
 /// Algorithm class for comparing images using average values of pixels.
-/// 
+///
 /// Images are resized to 9x8 and grayscaled.
 /// Afterwards, this algorithm finds the median pixel value.
 /// Then, each pixel is checked against the actual value and median value. A binary string is created and converted to a hex hash.
-/// 
+///
 /// * Works well with images of any dimension and aspect ratio
-/// * Comparing image fingerprints  
+/// * Comparing image fingerprints
 /// * Images can be rotated
 /// * Returns percentage diffence (0.0 - no difference, 1.0 - 100% difference)
 class MedianHash extends HashAlgorithm {
@@ -501,7 +501,7 @@ class MedianHash extends HashAlgorithm {
   double compare(Image src1, Image src2) {
     src1 = copyResize(grayscale(src1), height: 9, width: 8);
     src2 = copyResize(grayscale(src2), height: 9, width: 8);
-    
+
     super.compare(src1, src2);
 
     var hash1 = calcMedian(_pixelListPair.item1);
