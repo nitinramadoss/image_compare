@@ -3,25 +3,36 @@ import 'package:http/http.dart' as http;
 import 'package:image/image.dart';
 import 'algorithms.dart';
 
-/// Compare images at [path1] and [path2] with the given a specified [algorithm].
+enum SourceType { asset, network, image, bytes }
+
+/// Compare images at [src1] and [src2] with the given a specified [algorithm], specify the [SourceType] to indicate what sources are passed in.
 /// If [algorithm] is not specified, the default (PixelMatching())
+/// If [type] is not specified, the default (SourceType.asset)
 /// will be supplied.
-Future<double> compareImages(String path1, String path2,
-    [Algorithm? algorithm]) async {
+Future<double> compareImages(
+  var src1,
+  var src2, {
+  SourceType? type,
+  Algorithm? algorithm,
+}) async {
   algorithm ??= PixelMatching(); //default algorithm
-  Image src1;
-  Image src2;
-  if (RegExp(r"((http|https)://)(www.)?" +
-          "[a-zA-Z0-9@:%._\\+~#?&//=]" +
-          "{2,256}\\.[a-z]" +
-          "{2,6}\\b([-a-zA-Z0-9@:%" +
-          "._\\+~#?&//=]*)")
-      .hasMatch(path1)) {
-    src1 = decodeImage((await http.get(Uri.parse('$path1'))).bodyBytes)!;
-    src2 = decodeImage((await http.get(Uri.parse('$path2'))).bodyBytes)!;
-  } else {
-    src1 = _getImageFile('$path1');
-    src2 = _getImageFile('$path2');
+  type ??= SourceType.asset; //default source type
+  print(algorithm);
+  switch (type) {
+    case SourceType.asset:
+      src1 = _getImageFile('$src1');
+      src2 = _getImageFile('$src2');
+      break;
+    case SourceType.network:
+      src1 = decodeImage((await http.get(Uri.parse('$src1'))).bodyBytes)!;
+      src2 = decodeImage((await http.get(Uri.parse('$src2'))).bodyBytes)!;
+      break;
+    case SourceType.image:
+      break;
+    case SourceType.bytes:
+      src1 = decodeImage(src1);
+      src2 = decodeImage(src2);
+      break;
   }
 
   return algorithm.compare(src1, src2);
@@ -33,21 +44,27 @@ Image _getImageFile(String path) {
   return decodeImage(imageFile1)!;
 }
 
-/// Compare [targetPath] to each image present in [imagePaths] using a
-/// specified [algorithm].
+/// Compare [targetSrc] to each image present in [srcList] using a
+/// specified [algorithm],  specify the [SourceType] to indicate what sources are passed in.
 /// Returns a Future list of doubles corresponding to the compare
-/// output for each pair of input: [targetPath] and imagePaths[i].
-/// Output is in the same order as [imagePaths].
-///
+/// output for each pair of input: [targetSrc] and imagePaths[i].
+/// Output is in the same order as [srcList].
 /// If [algorithm] is not specified, the default (PixelMatching())
-/// If [type] is not specified, the default (ImageType.asset)
+/// If [type] is not specified, the default (SourceType.asset)
 /// will be supplied.
-Future<List<double>> listCompare(String targetPath, List<String> imagePaths,
-    [Algorithm? algorithm]) async {
+Future<List<double>> listCompare(
+  var targetSrc,
+  List<dynamic> srcList, {
+  SourceType? type,
+  Algorithm? algorithm,
+}) async {
   algorithm ??= PixelMatching(); //default algorithm
+  type ??= SourceType.asset; //default source type
+
   var results = <double>[];
-  await Future.wait(imagePaths.map((input) async {
-    results.add(await compareImages(targetPath, input, algorithm));
+  await Future.wait(srcList.map((input) async {
+    results.add(await compareImages(targetSrc, input,
+        algorithm: algorithm, type: type));
   }));
   return results;
 }
