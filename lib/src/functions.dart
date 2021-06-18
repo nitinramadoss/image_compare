@@ -1,6 +1,5 @@
 import 'algorithms.dart';
 import 'dart:io';
-import 'package:http/http.dart' as http;
 import 'package:image/image.dart';
 
 /// Compare images from [src1] and [src2] with a specified [algorithm].
@@ -20,16 +19,16 @@ Future<double> compareImages({
   Algorithm? algorithm,
 }) async {
   algorithm ??= PixelMatching(); //default algorithm
-
-  return algorithm.compare(
-      await _getImageFromDynamic(src1), await _getImageFromDynamic(src2));
+  src1 = await _getImageFromDynamic(src1);
+  src2 = await _getImageFromDynamic(src2);
+  return algorithm.compare(src1, src2);
 }
 
 Future<Image> _getImageFromDynamic(var src) async {
   if (src is File) {
     src = _getImageFile(src);
   } else if (src is Uri) {
-    src = decodeImage((await http.get(src)).bodyBytes);
+    src = _getImageNetwork(src);
   } else if (src is List<int>) {
     src = decodeImage(src);
   } else if (!(src is Image)) {
@@ -66,17 +65,17 @@ Future<List<double>> listCompare({
 }) async {
   algorithm ??= PixelMatching(); //default algorithm
 
-  var results = <double>[];
+  var results = List<double>.filled(srcList.length, 0);
 
   await Future.wait(srcList.map((otherSrc) async {
-    results.add(await compareImages(
-        src1: targetSrc, src2: otherSrc, algorithm: algorithm));
+    results[srcList.indexOf(otherSrc)] = await compareImages(
+        src1: targetSrc, src2: otherSrc, algorithm: algorithm);
   }));
 
   return results;
 }
 
-Future<Image> compareUrl(Uri src) async {
+Future<Image> _getImageNetwork(Uri src) async {
   var bodyBytes = <int>[];
   HttpClient cl = new HttpClient();
   var req = await cl.getUrl(src);
@@ -86,5 +85,6 @@ Future<Image> compareUrl(Uri src) async {
       bodyBytes.add(element);
     });
   }
+
   return decodeImage(bodyBytes)!;
 }

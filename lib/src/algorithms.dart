@@ -23,7 +23,8 @@ abstract class Algorithm {
     }
 
     for (var i = 0; i <= bytes2.length - 3; i += 3) {
-      _pixelListPair._second.add(Pixel(bytes2[i], bytes2[i + 1], bytes2[i + 2]));
+      _pixelListPair._second
+          .add(Pixel(bytes2[i], bytes2[i + 1], bytes2[i + 2]));
     }
 
     return 0.0; // default return
@@ -109,7 +110,8 @@ class EuclideanColorDistance extends DirectAlgorithm {
                   255,
               2) +
           pow(
-              (_pixelListPair._first[i]._blue - _pixelListPair._second[i]._blue) /
+              (_pixelListPair._first[i]._blue -
+                      _pixelListPair._second[i]._blue) /
                   255,
               2) +
           pow(
@@ -179,7 +181,7 @@ class PixelMatching extends DirectAlgorithm {
   }
 
   bool _withinRange(var delta, var value, var target) {
-    return (target - delta < value && value < target + delta);
+    return (target - delta <= value && value <= target + delta);
   }
 
   @override
@@ -300,6 +302,8 @@ abstract class HashAlgorithm extends Algorithm {
     var distCounter = (str1.length - str2.length).abs();
     var smaller = min(str1.length, str2.length);
     var larger = max(str1.length, str2.length);
+    print('larger $larger smaller $smaller');
+    print('str1 ${str1.length} str2 ${str2.length}');
 
     for (var i = 0; i < smaller; i++) {
       distCounter += str1[i] != str2[i] ? 1 : 0;
