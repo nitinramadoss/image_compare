@@ -1,17 +1,22 @@
-import 'dart:convert';
+import 'algorithms.dart';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart';
-import 'algorithms.dart';
 
-// TODO: Fix docs
-/// Compare images at [src1] and [src2] with the given a specified [algorithm], specify the [SourceType] to indicate what sources are passed in.
-/// If [algorithm] is not specified, the default (PixelMatching())
-/// If [type] is not specified, the default (SourceType.asset)
-/// will be supplied.
+/// Compare images from [src1] and [src2] with a specified [algorithm].
+/// If [algorithm] is not specified, the default (PixelMatching()) is supplied.
+///
+/// Returns a [Future] of double corresponding to the difference between [src1]
+/// and [src2]
+///
+/// [src1] and [src2] may be any combination of the supported types:
+/// * [Uri] - parsed URI, such as a URL (dart:core Uri class)
+/// * [File] - reference to a file on the file system (dart:io File class)
+/// * [List]- list of integers (bytes representing the image)
+/// * [Image] - image buffer (Image class)
 Future<double> compareImages({
-  var src1,
-  var src2,
+  required var src1,
+  required var src2,
   Algorithm? algorithm,
 }) async {
   algorithm ??= PixelMatching(); //default algorithm
@@ -24,12 +29,10 @@ Future<Image> _getImageFromDynamic(var src) async {
   if (src is File) {
     src = _getImageFile(src);
   } else if (src is Uri) {
-    src = compareUrl(src);
+    src = decodeImage((await http.get(src)).bodyBytes);
   } else if (src is List<int>) {
-    src = decodeImage(src)!;
-  } else if (src is Image) {
-  } else {
-    // TODO: Implement custom error?
+    src = decodeImage(src);
+  } else if (!(src is Image)) {
     throw UnsupportedError(
         "The source(${src}) of type(${src.runtimeType}) passed in is unsupported");
   }
@@ -43,27 +46,33 @@ Image _getImageFile(File path) {
   return decodeImage(imageFile1)!;
 }
 
-// TODO: Fix docs
 /// Compare [targetSrc] to each image present in [srcList] using a
-/// specified [algorithm],  specify the [SourceType] to indicate what sources are passed in.
-/// Returns a Future list of doubles corresponding to the compare
-/// output for each pair of input: [targetSrc] and imagePaths[i].
+/// specified [algorithm]. If [algorithm] is not specified, the default (PixelMatching())
+/// is supplied.
+///
+/// Returns a [Future] list of doubles corresponding to the difference
+/// between [targetSrc] and srcList[i].
 /// Output is in the same order as [srcList].
-/// If [algorithm] is not specified, the default (PixelMatching())
-/// If [type] is not specified, the default (SourceType.asset)
-/// will be supplied.
+///
+/// [targetSrc] and srcList[i] may be any combination of the supported types:
+/// * [Uri] - parsed URI, such as a URL (dart:core Uri class)
+/// * [File] - reference to a file on the file system (dart:io File class)
+/// * [List]- list of integers (bytes representing the image)
+/// * [Image] - image buffer (Image class)
 Future<List<double>> listCompare({
-  var targetSrc,
+  required var targetSrc,
   required List<dynamic> srcList,
   Algorithm? algorithm,
 }) async {
   algorithm ??= PixelMatching(); //default algorithm
 
   var results = <double>[];
-  await Future.wait(srcList.map((input) async {
+
+  await Future.wait(srcList.map((otherSrc) async {
     results.add(await compareImages(
-        src1: targetSrc, src2: input, algorithm: algorithm));
+        src1: targetSrc, src2: otherSrc, algorithm: algorithm));
   }));
+
   return results;
 }
 

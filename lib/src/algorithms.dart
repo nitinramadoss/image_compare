@@ -1,12 +1,9 @@
 import 'dart:math';
 import 'package:image/image.dart';
-import 'package:meta/meta.dart';
-import 'package:tuple/tuple.dart';
 
 /// Abstract class for all algorithms
 abstract class Algorithm {
-  /// Tuple of [Pixel] lists for [src1] and [src2]
-  @protected
+  /// [Pair] of [Pixel] lists for [src1] and [src2]
   var _pixelListPair;
 
   /// Default constructor gets implicitly called on subclass instantiation
@@ -15,18 +12,18 @@ abstract class Algorithm {
   /// Creates lists of [Pixel] for [src1] and [src2] for sub class compare operations
   double compare(Image src1, Image src2) {
     // Pixel representation of [src1] and [src2]
-    _pixelListPair = Tuple2<List, List>([], []);
+    _pixelListPair = Pair([], []);
 
     // RGB intensities
     var bytes1 = src1.getBytes(format: Format.rgb);
     var bytes2 = src2.getBytes(format: Format.rgb);
 
     for (var i = 0; i <= bytes1.length - 3; i += 3) {
-      _pixelListPair.item1.add(Pixel(bytes1[i], bytes1[i + 1], bytes1[i + 2]));
+      _pixelListPair._first.add(Pixel(bytes1[i], bytes1[i + 1], bytes1[i + 2]));
     }
 
     for (var i = 0; i <= bytes2.length - 3; i += 3) {
-      _pixelListPair.item2.add(Pixel(bytes2[i], bytes2[i + 1], bytes2[i + 2]));
+      _pixelListPair._second.add(Pixel(bytes2[i], bytes2[i + 1], bytes2[i + 2]));
     }
 
     return 0.0; // default return
@@ -46,6 +43,15 @@ class Pixel {
   String toString() {
     return 'red: $_red, blue: $_blue, green: $_green';
   }
+}
+
+/// Organizational class for storing a pair of generic
+/// objects [T1] and [T2]
+class Pair<T1, T2> {
+  T1 _first;
+  T2 _second;
+
+  Pair(this._first, this._second);
 }
 
 /// Algorithm class for comparing images pixel-by-pixel
@@ -95,20 +101,20 @@ class EuclideanColorDistance extends DirectAlgorithm {
 
     var sum = 0.0;
 
-    var numPixels = _pixelListPair.item1.length;
+    var numPixels = _pixelListPair._first.length;
 
     for (var i = 0; i < numPixels; i++) {
       sum += sqrt(pow(
-              (_pixelListPair.item1[i]._red - _pixelListPair.item2[i]._red) /
+              (_pixelListPair._first[i]._red - _pixelListPair._second[i]._red) /
                   255,
               2) +
           pow(
-              (_pixelListPair.item1[i]._blue - _pixelListPair.item2[i]._blue) /
+              (_pixelListPair._first[i]._blue - _pixelListPair._second[i]._blue) /
                   255,
               2) +
           pow(
-              (_pixelListPair.item1[i]._green -
-                      _pixelListPair.item2[i]._green) /
+              (_pixelListPair._first[i]._green -
+                      _pixelListPair._second[i]._green) /
                   255,
               2));
     }
@@ -156,15 +162,15 @@ class PixelMatching extends DirectAlgorithm {
 
     var delta = tolerance * 256;
 
-    var numPixels = _pixelListPair.item1.length;
+    var numPixels = _pixelListPair._first.length;
 
     for (var i = 0; i < numPixels; i++) {
-      if (_withinRange(delta, _pixelListPair.item1[i]._red,
-              _pixelListPair.item2[i]._red) &&
-          _withinRange(delta, _pixelListPair.item1[i]._blue,
-              _pixelListPair.item2[i]._blue) &&
-          _withinRange(delta, _pixelListPair.item1[i]._green,
-              _pixelListPair.item2[i]._green)) {
+      if (_withinRange(delta, _pixelListPair._first[i]._red,
+              _pixelListPair._second[i]._red) &&
+          _withinRange(delta, _pixelListPair._first[i]._blue,
+              _pixelListPair._second[i]._blue) &&
+          _withinRange(delta, _pixelListPair._first[i]._green,
+              _pixelListPair._second[i]._green)) {
         count++;
       }
     }
@@ -225,12 +231,12 @@ class IMED extends DirectAlgorithm {
     final offset = (boxPercentage * smallerDim).ceil();
     final len = 1 + offset * 2;
 
-    for (var i = 0; i < _pixelListPair.item1.length; i++) {
+    for (var i = 0; i < _pixelListPair._first.length; i++) {
       var start = (i - offset) - (src1.width * offset);
 
       for (var j = start; j <= (i + offset) + (src1.width * offset); j++) {
-        var x = _pixelListPair.item1; // src1 pixel list
-        var y = _pixelListPair.item2; // src2 pixel list
+        var x = _pixelListPair._first; // src1 pixel list
+        var y = _pixelListPair._second; // src2 pixel list
 
         if (j >= 0 && j < y.length) {
           var gauss =
@@ -264,11 +270,11 @@ class IMED extends DirectAlgorithm {
   /// indices [i] and [j]
   double _distance(var i, var j, var width) {
     var distance = 0.0;
-    var pointA = Tuple2((i % width), (i / width));
-    var pointB = Tuple2((j % width), (j / width));
+    var pointA = Pair((i % width), (i / width));
+    var pointB = Pair((j % width), (j / width));
 
-    distance = sqrt(pow(pointB.item1 - pointA.item1, 2) +
-        pow(pointB.item2 - pointA.item2, 2));
+    distance = sqrt(pow(pointB._first - pointA._first, 2) +
+        pow(pointB._second - pointA._second, 2));
 
     return distance;
   }
@@ -294,6 +300,7 @@ abstract class HashAlgorithm extends Algorithm {
     var distCounter = (str1.length - str2.length).abs();
     var smaller = min(str1.length, str2.length);
     var larger = max(str1.length, str2.length);
+
     for (var i = 0; i < smaller; i++) {
       distCounter += str1[i] != str2[i] ? 1 : 0;
     }
@@ -323,8 +330,8 @@ class PerceptualHash extends HashAlgorithm {
 
     super.compare(src1, src2);
 
-    var hash1 = calcPhash(_pixelListPair.item1);
-    var hash2 = calcPhash(_pixelListPair.item2);
+    var hash1 = calcPhash(_pixelListPair._first);
+    var hash2 = calcPhash(_pixelListPair._second);
 
     return _hammingDistance(hash1, hash2);
   }
@@ -456,8 +463,8 @@ class AverageHash extends HashAlgorithm {
 
     super.compare(src1, src2);
 
-    var hash1 = calcAvg(_pixelListPair.item1);
-    var hash2 = calcAvg(_pixelListPair.item2);
+    var hash1 = calcAvg(_pixelListPair._first);
+    var hash2 = calcAvg(_pixelListPair._second);
 
     // Delegates hamming distance computation to parent
     return _hammingDistance(hash1, hash2);
@@ -504,8 +511,8 @@ class MedianHash extends HashAlgorithm {
 
     super.compare(src1, src2);
 
-    var hash1 = calcMedian(_pixelListPair.item1);
-    var hash2 = calcMedian(_pixelListPair.item2);
+    var hash1 = calcMedian(_pixelListPair._first);
+    var hash2 = calcMedian(_pixelListPair._second);
 
     // Delegates hamming distance computation to parent
     return _hammingDistance(hash1, hash2);
@@ -540,11 +547,9 @@ class MedianHash extends HashAlgorithm {
 /// Abstract class for all histogram algorithms
 abstract class HistogramAlgorithm extends Algorithm {
   /// Number of bins in each histogram
-  @protected
   var _binSize;
 
-  /// Normalized histograms for [src1] and [src2] stored in a Tuple2
-  @protected
+  /// Normalized histograms for [src1] and [src2] stored in a [Pair]
   var _histograms;
 
   /// Default constructor gets implicitly called on subclass instantiation
@@ -556,7 +561,7 @@ abstract class HistogramAlgorithm extends Algorithm {
   @override
   double compare(Image src1, Image src2) {
     // RGB histograms for [src1] and [src2]
-    _histograms = Tuple2(RGBHistogram(_binSize), RGBHistogram(_binSize));
+    _histograms = Pair(RGBHistogram(_binSize), RGBHistogram(_binSize));
 
     // Delegates pixel extraction to parent
     super.compare(src1, src2);
@@ -564,16 +569,16 @@ abstract class HistogramAlgorithm extends Algorithm {
     final src1Size = src1.width * src1.height;
     final src2Size = src2.width * src2.height;
 
-    for (Pixel pixel in _pixelListPair.item1) {
-      _histograms.item1.redHist[pixel._red] += 1 / src1Size;
-      _histograms.item1.greenHist[pixel._green] += 1 / src1Size;
-      _histograms.item1.blueHist[pixel._blue] += 1 / src1Size;
+    for (Pixel pixel in _pixelListPair._first) {
+      _histograms._first.redHist[pixel._red] += 1 / src1Size;
+      _histograms._first.greenHist[pixel._green] += 1 / src1Size;
+      _histograms._first.blueHist[pixel._blue] += 1 / src1Size;
     }
 
-    for (Pixel pixel in _pixelListPair.item2) {
-      _histograms.item2.redHist[pixel._red] += 1 / src2Size;
-      _histograms.item2.greenHist[pixel._green] += 1 / src2Size;
-      _histograms.item2.blueHist[pixel._blue] += 1 / src2Size;
+    for (Pixel pixel in _pixelListPair._second) {
+      _histograms._second.redHist[pixel._red] += 1 / src2Size;
+      _histograms._second.greenHist[pixel._green] += 1 / src2Size;
+      _histograms._second.blueHist[pixel._blue] += 1 / src2Size;
     }
 
     return 0.0; // default return
@@ -621,9 +626,9 @@ class ChiSquareDistanceHistogram extends HistogramAlgorithm {
 
     var sum = 0.0;
 
-    sum += _diff(_histograms.item1.redHist, _histograms.item2.redHist) +
-        _diff(_histograms.item1.greenHist, _histograms.item2.greenHist) +
-        _diff(_histograms.item1.blueHist, _histograms.item2.blueHist);
+    sum += _diff(_histograms._first.redHist, _histograms._second.redHist) +
+        _diff(_histograms._first.greenHist, _histograms._second.greenHist) +
+        _diff(_histograms._first.blueHist, _histograms._second.blueHist);
 
     return sum / 3;
   }
@@ -675,9 +680,9 @@ class IntersectionHistogram extends HistogramAlgorithm {
 
     var sum = 0.0;
 
-    sum += _diff(_histograms.item1.redHist, _histograms.item2.redHist) +
-        _diff(_histograms.item1.greenHist, _histograms.item2.greenHist) +
-        _diff(_histograms.item1.blueHist, _histograms.item2.blueHist);
+    sum += _diff(_histograms._first.redHist, _histograms._second.redHist) +
+        _diff(_histograms._first.greenHist, _histograms._second.greenHist) +
+        _diff(_histograms._first.blueHist, _histograms._second.blueHist);
 
     return 1 - (sum / 3);
   }
