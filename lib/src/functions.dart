@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart';
@@ -8,9 +9,9 @@ import 'algorithms.dart';
 /// If [algorithm] is not specified, the default (PixelMatching())
 /// If [type] is not specified, the default (SourceType.asset)
 /// will be supplied.
-Future<double> compareImages(
+Future<double> compareImages({
   var src1,
-  var src2, {
+  var src2,
   Algorithm? algorithm,
 }) async {
   algorithm ??= PixelMatching(); //default algorithm
@@ -20,10 +21,10 @@ Future<double> compareImages(
 }
 
 Future<Image> _getImageFromDynamic(var src) async {
-  if (src is String) {
-    src = _getImageFile('$src');
+  if (src is File) {
+    src = _getImageFile(src);
   } else if (src is Uri) {
-    src = decodeImage((await http.get(src)).bodyBytes)!;
+    src = compareUrl(src);
   } else if (src is List<int>) {
     src = decodeImage(src)!;
   } else if (src is Image) {
@@ -36,8 +37,8 @@ Future<Image> _getImageFromDynamic(var src) async {
   return src;
 }
 
-Image _getImageFile(String path) {
-  var imageFile1 = File(path).readAsBytesSync();
+Image _getImageFile(File path) {
+  var imageFile1 = path.readAsBytesSync();
 
   return decodeImage(imageFile1)!;
 }
@@ -51,16 +52,30 @@ Image _getImageFile(String path) {
 /// If [algorithm] is not specified, the default (PixelMatching())
 /// If [type] is not specified, the default (SourceType.asset)
 /// will be supplied.
-Future<List<double>> listCompare(
+Future<List<double>> listCompare({
   var targetSrc,
-  List<dynamic> srcList, {
+  required List<dynamic> srcList,
   Algorithm? algorithm,
 }) async {
   algorithm ??= PixelMatching(); //default algorithm
 
   var results = <double>[];
   await Future.wait(srcList.map((input) async {
-    results.add(await compareImages(targetSrc, input, algorithm: algorithm));
+    results.add(await compareImages(
+        src1: targetSrc, src2: input, algorithm: algorithm));
   }));
   return results;
+}
+
+Future<Image> compareUrl(Uri src) async {
+  var bodyBytes = <int>[];
+  HttpClient cl = new HttpClient();
+  var req = await cl.getUrl(src);
+  var res = await req.close();
+  await for (var value in res) {
+    value.forEach((element) {
+      bodyBytes.add(element);
+    });
+  }
+  return decodeImage(bodyBytes)!;
 }
