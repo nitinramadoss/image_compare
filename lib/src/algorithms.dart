@@ -14,7 +14,7 @@ abstract class Algorithm {
     // Pixel representation of [src1] and [src2]
     _pixelListPair = Pair([], []);
 
-    // RGB intensities
+    // Bytes for [src1] and [src2]
     var bytes1 = src1.getBytes(format: Format.rgb);
     var bytes2 = src2.getBytes(format: Format.rgb);
 
@@ -302,8 +302,6 @@ abstract class HashAlgorithm extends Algorithm {
     var distCounter = (str1.length - str2.length).abs();
     var smaller = min(str1.length, str2.length);
     var larger = max(str1.length, str2.length);
-    print('larger $larger smaller $smaller');
-    print('str1 ${str1.length} str2 ${str2.length}');
 
     for (var i = 0; i < smaller; i++) {
       distCounter += str1[i] != str2[i] ? 1 : 0;
@@ -313,7 +311,8 @@ abstract class HashAlgorithm extends Algorithm {
   }
 }
 
-/// Algorithm class for comparing images with the perceptual hash method based on https://github.com/freearhey/phash-js.
+/// Algorithm class for comparing images with the perceptual hash method
+///
 /// Images are grayscaled and resized to 32x32. Then they are passed through a 1-dimension discrete cosine transformation.
 /// The top 8x8 is only accounted for since it gives the generalized frequency of the image. With this, a hash is created.
 ///
