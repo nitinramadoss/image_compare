@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'algorithms.dart';
 import 'dart:io';
 import 'package:image/image.dart';
@@ -30,6 +32,10 @@ Future<double> compareImages({
   } else if (result > 1) {
     result = 1;
   }
+
+  // Round to three decimal places
+  var mod = pow(10.0, 3); 
+  result = (result * mod).round().toDouble() / mod;
 
   return result;
 }
@@ -88,9 +94,9 @@ Future<Image> _getImageFromDynamic(var src) async {
 
     err += '$list<...>';
   } else if (src is Image) {
-    err += '$src with hashCode ${src.hashCode}.';
-
-    if (src.height * src.width * 4 != src.getBytes().length) {
+    err += '$src. $src.data.length != width * height';
+  
+    if (src.height * src.width != src.data.length) {
       throw FormatException(err);
     }
 

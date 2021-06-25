@@ -121,7 +121,7 @@ class EuclideanColorDistance extends DirectAlgorithm {
               2));
     }
 
-    return sum / (numPixels * sqrt(3)); // percentage difference
+    return sum / (numPixels * sqrt(3));
   }
 
   @override
@@ -207,16 +207,18 @@ class IMED extends DirectAlgorithm {
   /// Width parameter of the guassian function
   var sigma;
 
-  /// Percentage of the smaller image dimension
-  /// representing the bounding box width used for the gaussian blur.
+  /// Percentage of the smaller image's width representing a 
+  /// component of the window (box) width used for the gaussian blur.
+  /// 
+  /// Guassian blur box width = 1 + ([blurRatio] * (width - 1) / 2) * 2
   ///
   /// The larger this percentage is, the larger the gaussian blur is.
   ///
-  /// Note: Large [boxPercentage] values can lead to a long computation time
+  /// Note: Large [blurRatio] values can lead to a long computation time
   /// for comparisons.
-  var boxPercentage;
+  var blurRatio;
 
-  IMED({double this.sigma = 1, double this.boxPercentage = 0.005});
+  IMED({double this.sigma = 1, double this.blurRatio = 0.005});
 
   /// Computes distance between two images
   /// using image euclidean distance
@@ -228,19 +230,37 @@ class IMED extends DirectAlgorithm {
     var sum = 0.0;
     var gaussNorm = 0.0; // factor to divide by to normalize
 
-    final smallerDim = (src1.width < src1.height) ? src1.width : src1.height;
+    // image with smaller area
+    final smallSrc =
+        (src1.width * src1.height < src2.width * src2.height) ? src1 : src2;
 
-    final offset = (boxPercentage * smallerDim).ceil();
-    final len = 1 + offset * 2;
+    blurRatio = (blurRatio < 0.0) ? 0.0 : blurRatio;
+    blurRatio = (blurRatio > 1.0) ? 1.0 : blurRatio;
 
+    final offset = (blurRatio * (smallSrc.width - 1) ~/ 2).ceil();
+    
     for (var i = 0; i < _pixelListPair._first.length; i++) {
-      var start = (i - offset) - (src1.width * offset);
+      var currH = i ~/ smallSrc.width - offset; // current row in image matrix
 
-      for (var j = start; j <= (i + offset) + (src1.width * offset); j++) {
+      final leftEdgeOffset = ((i - offset) ~/ smallSrc.width == currH + offset)
+          ? (i - offset)
+          : i - (i % smallSrc.width);
+
+      final rightEdgeOffset = ((i + offset) ~/ smallSrc.width == currH + offset)
+          ? (i + offset)
+          : i + (smallSrc.width - (i % smallSrc.width)) -1;
+
+      var len = rightEdgeOffset - leftEdgeOffset + 1; // box width
+ 
+      var start = leftEdgeOffset - (smallSrc.width * offset); // index in list
+      var end = rightEdgeOffset + (smallSrc.width * offset);
+
+      for (var j = start; j <= end; j++) {
         var x = _pixelListPair._first; // src1 pixel list
         var y = _pixelListPair._second; // src2 pixel list
 
-        if (j >= 0 && j < y.length) {
+        if ((j >= 0 && j < y.length) && j ~/ smallSrc.width == currH) {
+
           var gauss =
               exp(-pow(_distance(i, j, src1.width), 2) / 2 * pow(sigma, 2));
 
@@ -253,9 +273,11 @@ class IMED extends DirectAlgorithm {
               255;
         }
 
-        if (j == (start + len)) {
-          j = start + src1.width;
+        if (j == (start + len - 1)) {
+          j = start + smallSrc.width;
           start = j;
+          j--;
+          currH++;
         }
       }
     }
@@ -328,8 +350,8 @@ class PerceptualHash extends HashAlgorithm {
   ///Resize and grayscale images
   @override
   double compare(Image src1, Image src2) {
-    src1 = copyResize(grayscale(src1), height: 32, width: 32);
-    src2 = copyResize(grayscale(src2), height: 32, width: 32);
+    src1 = copyResize(src1, height: 32, width: 32);
+    src2 = copyResize(src2, height: 32, width: 32);
 
     super.compare(src1, src2);
 
@@ -475,7 +497,9 @@ class AverageHash extends HashAlgorithm {
 
   /// Helper funciton to compute average hex hash for an image
   String calcAvg(List pixelList) {
-    var srcArray = pixelList.map((e) => e._red).toList();
+    var srcArray = pixelList
+        .map((e) => e._red)
+        .toList();
 
     var bitString = '';
 
@@ -523,13 +547,18 @@ class MedianHash extends HashAlgorithm {
 
   /// Helper funciton to compute median hex hash for an image
   String calcMedian(List pixelList) {
-    var srcArray = pixelList.map((e) => e._red).toList();
+    var srcArray = pixelList
+        .map((e) => e._red)
+        .toList();
     var tempArr = List.from(srcArray);
     var bitString = '';
+
     tempArr.sort((a, b) => a.compareTo(b));
+
     var median = (tempArr[((tempArr.length - 1) / 2).floor()] +
             tempArr[((tempArr.length - 1) / 2).floor() + 1]) /
         2;
+
     srcArray.asMap().forEach((key, value) {
       srcArray[key] = value > median ? 1 : 0;
     });

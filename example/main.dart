@@ -8,8 +8,8 @@ void main(List<String> arguments) async {
   var url2 =
       'https://fujifilm-x.com/wp-content/uploads/2019/08/x-t30_sample-images03.jpg';
 
-  var otherFile = File('../images/drawings/kolam1.png');
-  var targetFile = File('../images/drawings/scribble1.png');
+  var file1 = File('../images/drawings/kolam1.png');
+  var file2 = File('../images/drawings/scribble1.png');
 
   var bytes1 = File('../images/animals/koala.jpg').readAsBytesSync();
   var bytes2 = File('../images/animals/komodo.jpg').readAsBytesSync();
@@ -42,7 +42,7 @@ void main(List<String> arguments) async {
 
   // Calculate IMED between two asset images
   var assetResult = await compareImages(
-      src1: targetFile, src2: otherFile, algorithm: IMED(boxPercentage: 0.001));
+      src1: file1, src2: file2, algorithm: IMED(blurRatio: 0.001));
 
   print('Difference: ${assetResult * 100}%');
 
@@ -60,7 +60,7 @@ void main(List<String> arguments) async {
 
   // Calculate pixel matching between one network and one asset image
   var networkAssetResult =
-      await compareImages(src1: Uri.parse(url2), src2: targetFile);
+      await compareImages(src1: Uri.parse(url2), src2: file1);
 
   print('Difference: ${networkAssetResult * 100}%');
 
