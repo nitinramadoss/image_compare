@@ -19,7 +19,7 @@ void main(List<String> arguments) async {
 
   var assetImages = [
     File('../images/animals/bunny.jpg'),
-    File('../images/animals/deer.jpg'),
+    File('../images/objects/red_apple.png'),
     File('../images/animals/tiger.jpg')
   ];
 
@@ -66,7 +66,7 @@ void main(List<String> arguments) async {
 
   // Calculate median hash between a byte array and image
   var byteImageResult =
-      await compareImages(src1: image1, src2: bytes1, algorithm: MedianHash());
+      await compareImages(src1: image1, src2: bytes2, algorithm: MedianHash());
 
   print('Difference: ${byteImageResult * 100}%');
 

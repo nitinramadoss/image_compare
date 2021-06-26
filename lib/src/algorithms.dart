@@ -207,9 +207,9 @@ class IMED extends DirectAlgorithm {
   /// Width parameter of the guassian function
   var sigma;
 
-  /// Percentage of the smaller image's width representing a 
+  /// Percentage of the smaller image's width representing a
   /// component of the window (box) width used for the gaussian blur.
-  /// 
+  ///
   /// Guassian blur box width = 1 + ([blurRatio] * (width - 1) / 2) * 2
   ///
   /// The larger this percentage is, the larger the gaussian blur is.
@@ -238,7 +238,7 @@ class IMED extends DirectAlgorithm {
     blurRatio = (blurRatio > 1.0) ? 1.0 : blurRatio;
 
     final offset = (blurRatio * (smallSrc.width - 1) ~/ 2).ceil();
-    
+
     for (var i = 0; i < _pixelListPair._first.length; i++) {
       var currH = i ~/ smallSrc.width - offset; // current row in image matrix
 
@@ -248,10 +248,10 @@ class IMED extends DirectAlgorithm {
 
       final rightEdgeOffset = ((i + offset) ~/ smallSrc.width == currH + offset)
           ? (i + offset)
-          : i + (smallSrc.width - (i % smallSrc.width)) -1;
+          : i + (smallSrc.width - (i % smallSrc.width)) - 1;
 
       var len = rightEdgeOffset - leftEdgeOffset + 1; // box width
- 
+
       var start = leftEdgeOffset - (smallSrc.width * offset); // index in list
       var end = rightEdgeOffset + (smallSrc.width * offset);
 
@@ -260,7 +260,6 @@ class IMED extends DirectAlgorithm {
         var y = _pixelListPair._second; // src2 pixel list
 
         if ((j >= 0 && j < y.length) && j ~/ smallSrc.width == currH) {
-
           var gauss =
               exp(-pow(_distance(i, j, src1.width), 2) / 2 * pow(sigma, 2));
 
@@ -497,9 +496,7 @@ class AverageHash extends HashAlgorithm {
 
   /// Helper funciton to compute average hex hash for an image
   String calcAvg(List pixelList) {
-    var srcArray = pixelList
-        .map((e) => e._red)
-        .toList();
+    var srcArray = pixelList.map((e) => e._red).toList();
 
     var bitString = '';
 
@@ -511,7 +508,7 @@ class AverageHash extends HashAlgorithm {
     srcArray.forEach((element) {
       bitString += (1 * element).toString();
     });
-    
+
     return BigInt.parse(bitString, radix: 2).toRadixString(16);
   }
 
@@ -548,9 +545,7 @@ class MedianHash extends HashAlgorithm {
 
   /// Helper funciton to compute median hex hash for an image
   String calcMedian(List pixelList) {
-    var srcArray = pixelList
-        .map((e) => e._red)
-        .toList();
+    var srcArray = pixelList.map((e) => e._red).toList();
     var tempArr = List.from(srcArray);
     var bitString = '';
 
