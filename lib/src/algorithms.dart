@@ -511,6 +511,7 @@ class AverageHash extends HashAlgorithm {
     srcArray.forEach((element) {
       bitString += (1 * element).toString();
     });
+    
     return BigInt.parse(bitString, radix: 2).toRadixString(16);
   }
 

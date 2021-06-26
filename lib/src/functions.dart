@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'algorithms.dart';
 import 'dart:io';
 import 'package:image/image.dart';
@@ -32,10 +30,6 @@ Future<double> compareImages({
   } else if (result > 1) {
     result = 1;
   }
-
-  // Round to three decimal places
-  var mod = pow(10.0, 3); 
-  result = (result * mod).round().toDouble() / mod;
 
   return result;
 }
