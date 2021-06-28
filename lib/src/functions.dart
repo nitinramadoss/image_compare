@@ -1,6 +1,6 @@
 import 'algorithms.dart';
-import 'dart:io';
 import 'package:image/image.dart';
+import 'package:universal_io/io.dart';
 
 /// Compare images from [src1] and [src2] with a specified [algorithm].
 /// If [algorithm] is not specified, the default (PixelMatching()) is supplied.

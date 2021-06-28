@@ -8,7 +8,7 @@
 Add to pubspec.yaml
 ```
 dependencies:
-    image_compare: ^1.1.0
+  image_compare: ^1.1.1
 ```
 
 Import:
@@ -20,7 +20,7 @@ import 'package:image_compare/image_compare.dart';
 **Pixel Comparison Algorithms**
 - [Pixel Matching](#pixelmatchingdouble-tolerance--005) `PixelMatching({double tolerance = 0.05})`
 - [Euclidean Color Distance](#euclideancolordistance) `EuclideanColorDistance()`
-- [IMage Euclidean Distance](#imeddouble-sigma--1-double-boxpercentage--0005) `IMED({double sigma = 1, double blurRatio = 0.005})`
+- [IMage Euclidean Distance](#imeddouble-sigma--1-double-blurratio--0005) `IMED({double sigma = 1, double blurRatio = 0.005})`
 
 **Histogram Comparison Algorithms**
 - [Chi Square Distance](#chisquaredistancehistogram) `ChiSquareDistanceHistogram()`
