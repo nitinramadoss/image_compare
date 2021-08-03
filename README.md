@@ -2,13 +2,13 @@
 ### Comparing images for difference
 #### Simple, extensible dart package
 
-![alt text](https://github.com/nitinramadoss/image_compare/blob/main/images/seven2.PNG) ![alt text](https://github.com/nitinramadoss/image_compare/blob/main/images/seven.PNG)
+![image1](https://github.com/nitinramadoss/image_compare/blob/main/images/seven2.PNG) ![image2](https://github.com/nitinramadoss/image_compare/blob/main/images/seven.PNG)
 
 ## Dependency
 Add to pubspec.yaml
 ```
 dependencies:
-    image_compare: ^1.0.0
+  image_compare: ^1.1.1
 ```
 
 Import:
@@ -20,7 +20,7 @@ import 'package:image_compare/image_compare.dart';
 **Pixel Comparison Algorithms**
 - [Pixel Matching](#pixelmatchingdouble-tolerance--005) `PixelMatching({double tolerance = 0.05})`
 - [Euclidean Color Distance](#euclideancolordistance) `EuclideanColorDistance()`
-- [IMage Euclidean Distance](#imeddouble-sigma--1-double-boxpercentage--0005) `IMED({double sigma = 1, double boxPercentage = 0.005})`
+- [IMage Euclidean Distance](#imeddouble-sigma--1-double-blurratio--0005) `IMED({double sigma = 1, double blurRatio = 0.005})`
 
 **Histogram Comparison Algorithms**
 - [Chi Square Distance](#chisquaredistancehistogram) `ChiSquareDistanceHistogram()`
@@ -32,16 +32,46 @@ import 'package:image_compare/image_compare.dart';
 - [Median](#medianhash) `MedianHash()`
 
 ## Implementation:
-1. Initialize two images from the dart image class 
-*(https://pub.dev/documentation/image/latest/image/Image-class.html):*
+1. Initialize two sources for the images. Can be any combination of the following types:
+* [Uri](https://api.dart.dev/stable/2.13.4/dart-core/Uri-class.html) - image url
+* [File](https://api.dart.dev/stable/2.13.4/dart-io/File-class.html) - image file
+* [List<int>](https://api.dart.dev/stable/2.10.5/dart-core/List-class.html) - bytes representing image
+* [Image](https://pub.dev/documentation/image/latest/image/Image-class.html) - image class
+
+Url example:
 ```
-Image a = Image.fromBytes(width, height, bytes1);
-Image b = Image.fromBytes(width, height, bytes2);
+var a = Uri.parse('https://fujifilm-x.com/wp-content/uploads/2019/08/x-t30_sample-images03.jpg');
+var b = Uri.parse('https://hs.sbcounty.gov/cn/Photo%20Gallery/Sample%20Picture%20-%20Koala.jpg');
 ```
-2. Select an algorithm (from features section). The default is `PixelMatching()`
+File example:
+```
+var a = File('../images/tiger.jpg');
+var b = File('../images/leopard.png');
+```
+Bytes example:
+```
+var a = [50, 183, 24, ...];
+var b = [255, 230, 81, ...];
+```
+Image example:
+```
+var a = Image(100, 100);
+var b = Image.from(a); 
+```
+Any combination example:
+```
+var a = File('../images/tiger.jpg');
+var b = Uri.parse('https://fujifilm-x.com/wp-content/uploads/2019/08/x-t30_sample-images03.jpg');
+```
+
+2. Select an algorithm (from classes section). The default is `PixelMatching()`
 3. Compare the images:
 ```
-var result = compareImages(a, b, IntersectionHistogram())
+var result = await compareImages(src1: a, src2: b, algorithm: ChiSquareDistanceHistogram())
+
+// or compare one image source to a list of others
+
+var results = await listCompare(target: a, list: [a, b], algorithm: IMED(blurRatio: 0.1));
 ```
 
 ## Algorithm Specifics: 
@@ -68,11 +98,11 @@ var result = compareImages(a, b, IntersectionHistogram())
 #### Result
  - Sum of euclidean distances between each pixel (RGB value), bounded by the maximum distance possible given two images.
 
-### `IMED({double sigma = 1, double boxPercentage = 0.005})`
+### `IMED({double sigma = 1, double blurRatio = 0.005})`
 *Source: [IMage Euclidean Distance pdf](https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.680.2097&rep=rep1&type=pdf)*
 
 #### About
- - Images are resized to the same dimensions (if dimensions don't match) and are grayscaled. A gaussian blur is applied when calculating distance between pixel intensities.    Spatial relationship is taken into account within the gaussian function to reduce the effect of minor perturbations (ignores minor differences). 
+ - Images are resized to the same dimensions (if dimensions don't match) and are grayscaled. A gaussian blur is applied when calculating distance between pixel intensities. Spatial relationship is taken into account within the gaussian function to reduce the effect of minor perturbations (ignores minor differences). 
  - Gaussian blur has been modified: area decreased (Note)
  - Best with images of similar aspect ratios and dimensions
  - Compare for ~exactness (if two images are roughly identical)
@@ -138,43 +168,97 @@ var result = compareImages(a, b, IntersectionHistogram())
 
 ## Full Example:
 ```
-import 'package:image/image.dart';
-
-import 'package:image_compare/image_compare.dart';
 import 'dart:io';
+import 'package:image/image.dart';
+import 'package:image_compare/image_compare.dart';
 
-void main(List<String> arguments) {
-  var otherPath = 'images/animals/komodo.jpg';
-  var targetPath = 'images/animals/koala.jpg';
+void main(List<String> arguments) async {
+  var url1 =
+      'https://www.tompetty.com/sites/g/files/g2000007521/f/sample_01.jpg';
+  var url2 =
+      'https://fujifilm-x.com/wp-content/uploads/2019/08/x-t30_sample-images03.jpg';
 
-  var src1 = getImageFile(targetPath);
-  var src2 = getImageFile(otherPath);
+  var file1 = File('../images/drawings/kolam1.png');
+  var file2 = File('../images/drawings/scribble1.png');
 
-  // Calculate pixel matching with a 10% tolerance
-  var result = compareImages(src1, src2, PixelMatching(tolerance: 0.1));
+  var bytes1 = File('../images/animals/koala.jpg').readAsBytesSync();
+  var bytes2 = File('../images/animals/komodo.jpg').readAsBytesSync();
 
-  print('Difference: ${result * 100}%');
+  var image1 = decodeImage(bytes1);
+  var image2 = decodeImage(bytes2);
 
-  // Calculate Chi square distance between histograms
-  result = compareImages(src1, src2, ChiSquareDistanceHistogram());
-
-  print('Difference: ${result * 100}%');
-
-  var images = [
-    getImageFile('images/animals/deer.jpg'),
-    getImageFile('images/animals/bunny.jpg'),
-    getImageFile('images/animals/tiger.jpg')
+  var assetImages = [
+    File('../images/animals/bunny.jpg'),
+    File('../images/animals/deer.jpg'),
+    File('../images/animals/tiger.jpg')
   ];
 
-  // Calculate median hashes between target (src1) and list of images
-  var results = listCompare(src1, images, MedianHash());
+  var networkImages = [
+    Uri.parse(
+        'https://fujifilm-x.com/wp-content/uploads/2019/08/x-t30_sample-images03.jpg'),
+    Uri.parse(
+        'https://hs.sbcounty.gov/cn/Photo%20Gallery/Sample%20Picture%20-%20Koala.jpg'),
+    Uri.parse(
+        'https://c.files.bbci.co.uk/12A9B/production/_111434467_gettyimages-1143489763.jpg'),
+  ];
 
-  results.forEach((e) => print('Difference: ${e * 100}%'));
+  // Calculate chi square histogram distance between two network images
+  var networkResult = await compareImages(
+      src1: Uri.parse(url1),
+      src2: Uri.parse(url2),
+      algorithm: ChiSquareDistanceHistogram());
+
+  print('Difference: ${networkResult * 100}%');
+
+  // Calculate IMED between two asset images
+  var assetResult = await compareImages(
+      src1: file1, src2: file2, algorithm: IMED(blurRatio: 0.001));
+
+  print('Difference: ${assetResult * 100}%');
+
+  // Calculate intersection histogram difference between two bytes of images
+  var byteResult = await compareImages(
+      src1: bytes1, src2: bytes2, algorithm: IntersectionHistogram());
+
+  print('Difference: ${byteResult * 100}%');
+
+  // Calculate euclidean color distance between two images
+  var imageResult = await compareImages(
+      src1: image1, src2: image2, algorithm: EuclideanColorDistance());
+
+  print('Difference: ${imageResult * 100}%');
+
+  // Calculate pixel matching between one network and one asset image
+  var networkAssetResult =
+      await compareImages(src1: Uri.parse(url2), src2: file1);
+
+  print('Difference: ${networkAssetResult * 100}%');
+
+  // Calculate median hash between a byte array and image
+  var byteImageResult =
+      await compareImages(src1: image1, src2: bytes1, algorithm: MedianHash());
+
+  print('Difference: ${byteImageResult * 100}%');
+
+  // Calculate average hash difference between a network image
+  // and a list of network images
+  var networkResults = await listCompare(
+    target: Uri.parse(url1),
+    list: networkImages,
+    algorithm: AverageHash(),
+  );
+
+  networkResults.forEach((e) => print('Difference: ${e * 100}%'));
+
+  // Calculate perceptual hash difference between an asset image
+  // and a list of asset iamges
+  var assetResults = await listCompare(
+    target: File('../images/animals/deer.jpg'),
+    list: assetImages,
+    algorithm: PerceptualHash(),
+  );
+
+  assetResults.forEach((e) => print('Difference: ${e * 100}%'));
 }
 
-Image getImageFile(String path) {
-  var imageFile1 = File(path).readAsBytesSync();
-
-  return decodeImage(imageFile1)!;
-}
 ```
