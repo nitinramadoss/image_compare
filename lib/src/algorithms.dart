@@ -15,16 +15,18 @@ abstract class Algorithm {
     _pixelListPair = Pair([], []);
 
     // Bytes for [src1] and [src2]
-    var bytes1 = src1.getBytes(format: Format.rgb);
-    var bytes2 = src2.getBytes(format: Format.rgb);
+    var bytes1 = src1.getBytes();
+    var bytes2 = src2.getBytes();
+    final bytesPerPixel = 4;
 
-    for (var i = 0; i <= bytes1.length - 3; i += 3) {
-      _pixelListPair._first.add(Pixel(bytes1[i], bytes1[i + 1], bytes1[i + 2]));
+    for (var i = 0; i <= bytes1.length - bytesPerPixel; i += bytesPerPixel) {
+      _pixelListPair._first
+          .add(Pixel(bytes1[i], bytes1[i + 1], bytes1[i + 2], bytes1[i + 3]));
     }
 
-    for (var i = 0; i <= bytes2.length - 3; i += 3) {
+    for (var i = 0; i <= bytes2.length - bytesPerPixel; i += bytesPerPixel) {
       _pixelListPair._second
-          .add(Pixel(bytes2[i], bytes2[i + 1], bytes2[i + 2]));
+          .add(Pixel(bytes2[i], bytes2[i + 1], bytes2[i + 2], bytes2[i + 3]));
     }
 
     return 0.0; // default return
@@ -32,17 +34,18 @@ abstract class Algorithm {
 }
 
 /// Organizational class for storing [src1] and [src2] data.
-/// Fields are RGB values
+/// Fields are RGBA values
 class Pixel {
   final int _red;
-  final int _blue;
   final int _green;
+  final int _blue;
+  final int _alpha;
 
-  Pixel(this._red, this._blue, this._green);
+  Pixel(this._red, this._green, this._blue, this._alpha);
 
   @override
   String toString() {
-    return 'red: $_red, blue: $_blue, green: $_green';
+    return 'red: $_red, green: $_green, blue: $_blue, alpha: $_alpha';
   }
 }
 
@@ -93,6 +96,11 @@ abstract class DirectAlgorithm extends Algorithm {
 /// * Compare for exactness (if two images are identical)
 /// * Returns percentage difference (0.0 - no difference, 1.0 - 100% difference)
 class EuclideanColorDistance extends DirectAlgorithm {
+  /// Ignores alpha channel when computing difference
+  var ignoreAlpha;
+
+  EuclideanColorDistance({bool this.ignoreAlpha = true});
+
   /// Computes euclidean color distance between two images
   /// of the same size
   @override
@@ -103,6 +111,8 @@ class EuclideanColorDistance extends DirectAlgorithm {
     var sum = 0.0;
 
     var numPixels = _pixelListPair._first.length;
+
+    var alphaBit = (ignoreAlpha) ? 0 : 1;
 
     for (var i = 0; i < numPixels; i++) {
       sum += sqrt(pow(
@@ -118,10 +128,16 @@ class EuclideanColorDistance extends DirectAlgorithm {
               (_pixelListPair._first[i]._green -
                       _pixelListPair._second[i]._green) /
                   255,
-              2));
+              2) +
+          (alphaBit *
+              pow(
+                  (_pixelListPair._first[i]._alpha -
+                          _pixelListPair._second[i]._alpha) /
+                      255,
+                  2)));
     }
 
-    return sum / (numPixels * sqrt(3));
+    return sum / (numPixels * sqrt(3 + alphaBit));
   }
 
   @override
@@ -140,6 +156,9 @@ class EuclideanColorDistance extends DirectAlgorithm {
 /// * Compare for exactness (if two images are identical)
 /// * Returns percentage diffence (0.0 - no difference, 1.0 - 100% difference)
 class PixelMatching extends DirectAlgorithm {
+  /// Ignores alpha channel when computing difference
+  var ignoreAlpha;
+
   /// Percentage tolerance value between 0.0 and 1.0
   /// of the range of RGB values, 256, used when directly
   /// comparing pixels for equivalence.
@@ -148,7 +167,7 @@ class PixelMatching extends DirectAlgorithm {
   /// (0.05 * 256) of another RGB value.
   var tolerance;
 
-  PixelMatching({double this.tolerance = 0.05});
+  PixelMatching({bool this.ignoreAlpha = true, this.tolerance = 0.05});
 
   /// Computes overlap between two images's color intensities.
   /// Return value is the fraction similarity e.g. 0.1 means 10%
@@ -174,6 +193,12 @@ class PixelMatching extends DirectAlgorithm {
           _withinRange(delta, _pixelListPair._first[i]._green,
               _pixelListPair._second[i]._green)) {
         count++;
+
+        if (!ignoreAlpha &&
+              !_withinRange(delta, _pixelListPair._first[i]._alpha,
+                  _pixelListPair._second[i]._alpha)) {
+                    count--;
+        }
       }
     }
 
@@ -588,8 +613,8 @@ abstract class HistogramAlgorithm extends Algorithm {
   /// Fills color intensity histograms for child class compare operations
   @override
   double compare(Image src1, Image src2) {
-    // RGB histograms for [src1] and [src2]
-    _histograms = Pair(RGBHistogram(_binSize), RGBHistogram(_binSize));
+    // RGBA histograms for [src1] and [src2]
+    _histograms = Pair(RGBAHistogram(_binSize), RGBAHistogram(_binSize));
 
     // Delegates pixel extraction to parent
     super.compare(src1, src2);
@@ -601,12 +626,14 @@ abstract class HistogramAlgorithm extends Algorithm {
       _histograms._first.redHist[pixel._red] += 1 / src1Size;
       _histograms._first.greenHist[pixel._green] += 1 / src1Size;
       _histograms._first.blueHist[pixel._blue] += 1 / src1Size;
+      _histograms._first.alphaHist[pixel._alpha] += 1 / src1Size;
     }
 
     for (Pixel pixel in _pixelListPair._second) {
       _histograms._second.redHist[pixel._red] += 1 / src2Size;
       _histograms._second.greenHist[pixel._green] += 1 / src2Size;
       _histograms._second.blueHist[pixel._blue] += 1 / src2Size;
+      _histograms._second.alphaHist[pixel._alpha] += 1 / src2Size;
     }
 
     return 0.0; // default return
@@ -619,17 +646,19 @@ abstract class HistogramAlgorithm extends Algorithm {
 }
 
 /// Organizational class for storing [src1] and [src2] data.
-/// Fields are RGB histograms (256 element lists)
-class RGBHistogram {
+/// Fields are RGBA histograms (256 element lists)
+class RGBAHistogram {
   final _binSize;
   late List redHist;
   late List greenHist;
   late List blueHist;
+  late List alphaHist;
 
-  RGBHistogram(this._binSize) {
+  RGBAHistogram(this._binSize) {
     redHist = List.filled(_binSize, 0.0);
     greenHist = List.filled(_binSize, 0.0);
     blueHist = List.filled(_binSize, 0.0);
+    alphaHist = List.filled(_binSize, 0.0); 
   }
 }
 
@@ -646,6 +675,11 @@ class RGBHistogram {
 /// * Compare for similarity (if two images are similar based on their color distribution)
 /// * Returns percentage difference (0.0 - no difference, 1.0 - 100% difference)
 class ChiSquareDistanceHistogram extends HistogramAlgorithm {
+  /// Ignores alpha channel when computing difference
+  var ignoreAlpha;
+
+  ChiSquareDistanceHistogram({bool this.ignoreAlpha = true});
+
   /// Calculates histogram similarity using chi-squared distance
   @override
   double compare(Image src1, Image src2) {
@@ -654,11 +688,14 @@ class ChiSquareDistanceHistogram extends HistogramAlgorithm {
 
     var sum = 0.0;
 
+    var alphaBit = (ignoreAlpha) ? 0 : 1;
+
     sum += _diff(_histograms._first.redHist, _histograms._second.redHist) +
         _diff(_histograms._first.greenHist, _histograms._second.greenHist) +
-        _diff(_histograms._first.blueHist, _histograms._second.blueHist);
+        _diff(_histograms._first.blueHist, _histograms._second.blueHist) + 
+        (alphaBit * _diff(_histograms._first.alphaHist, _histograms._second.alphaHist));
 
-    return sum / 3;
+    return sum / (3 + alphaBit);
   }
 
   /// Helper function to compute chi square difference
@@ -700,6 +737,11 @@ class ChiSquareDistanceHistogram extends HistogramAlgorithm {
 /// * Compare for similarity (if two images are similar based on their color distribution)
 /// * Returns percentage diffence (0.0 - no difference, 1.0 - 100% difference)
 class IntersectionHistogram extends HistogramAlgorithm {
+  /// Ignores alpha channel when computing difference
+  var ignoreAlpha;
+
+  IntersectionHistogram({bool this.ignoreAlpha = true});
+
   /// Calculates histogram similarity using standard intersection
   @override
   double compare(Image src1, Image src2) {
@@ -708,11 +750,14 @@ class IntersectionHistogram extends HistogramAlgorithm {
 
     var sum = 0.0;
 
+    var alphaBit = (ignoreAlpha) ? 0 : 1;
+
     sum += _diff(_histograms._first.redHist, _histograms._second.redHist) +
         _diff(_histograms._first.greenHist, _histograms._second.greenHist) +
-        _diff(_histograms._first.blueHist, _histograms._second.blueHist);
+        _diff(_histograms._first.blueHist, _histograms._second.blueHist) + 
+        (alphaBit * _diff(_histograms._first.alphaHist, _histograms._second.alphaHist));
 
-    return 1 - (sum / 3);
+    return 1 - (sum / (3 + alphaBit));
   }
 
   /// Helper function to compute difference between two histograms

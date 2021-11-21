@@ -54,7 +54,7 @@ void main(List<String> arguments) async {
 
   // Calculate euclidean color distance between two images
   var imageResult = await compareImages(
-      src1: image1, src2: image2, algorithm: EuclideanColorDistance());
+      src1: file1, src2: file2, algorithm: EuclideanColorDistance());
 
   print('Difference: ${imageResult * 100}%');
 
