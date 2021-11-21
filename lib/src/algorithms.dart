@@ -192,13 +192,11 @@ class PixelMatching extends DirectAlgorithm {
               _pixelListPair._second[i]._blue) &&
           _withinRange(delta, _pixelListPair._first[i]._green,
               _pixelListPair._second[i]._green)) {
-        count++;
-
-        if (!ignoreAlpha &&
-              !_withinRange(delta, _pixelListPair._first[i]._alpha,
+        if (ignoreAlpha ||
+              _withinRange(delta, _pixelListPair._first[i]._alpha,
                   _pixelListPair._second[i]._alpha)) {
-                    count--;
-        }
+                    count++;
+                  }
       }
     }
 

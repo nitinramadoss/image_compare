@@ -113,7 +113,7 @@ var results = await listCompare(target: a, list: [a, b], algorithm: IMED(blurRat
 ### `ChiSquareDistanceHistogram()`
 
 #### About
- - Images are converted to histogram representations (x-axis intensity, y-axis frequency). The chi-square distance formula is applied to compute the distance between each of the 256 bins. There are three histograms per image (RGB histograms).  
+ - Images are converted to histogram representations (x-axis intensity, y-axis frequency). The chi-square distance formula is applied to compute the distance between each of the 256 bins. There are four histograms per image (RGBA histograms).  
  - Works with images of all aspect ratios and dimensions
  - Compare for similarity (if two images are similar based on their color distribution)
 
@@ -123,7 +123,7 @@ var results = await listCompare(target: a, list: [a, b], algorithm: IMED(blurRat
 ### `IntersectionHistogram()`
 
 #### About
- - Images are converted to histogram representations (x-axis intensity, y-axis frequency). Histograms are overlaid to calculate percentage overlap. There are three histograms per image (RGB histograms).  
+ - Images are converted to histogram representations (x-axis intensity, y-axis frequency). Histograms are overlaid to calculate percentage overlap. There are four histograms per image (RGBA histograms).  
  - Works with images of all aspect ratios and dimensions
  - Compare for similarity (if two images are similar based on their color distribution)
 
