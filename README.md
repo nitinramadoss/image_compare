@@ -4,6 +4,12 @@
 
 ![image1](https://github.com/nitinramadoss/image_compare/blob/main/images/seven2.PNG) ![image2](https://github.com/nitinramadoss/image_compare/blob/main/images/seven.PNG)
 
+## What's New?
+ - Handle transparency with the alpha channel option
+    - Set `ignoreAlpha` to `false` to account for alpha 
+    - Available for EuclideanColorDistance, PixelMatching, and the histogram algorithms 
+    - Example: `PixelMatching(ignoreAlpha: false);`
+  
 ## Dependency
 Add to pubspec.yaml
 ```
@@ -18,13 +24,13 @@ import 'package:image_compare/image_compare.dart';
 
 ## Classes:
 **Pixel Comparison Algorithms**
-- [Pixel Matching](#pixelmatchingdouble-tolerance--005) `PixelMatching({double tolerance = 0.05})`
-- [Euclidean Color Distance](#euclideancolordistance) `EuclideanColorDistance()`
+- [Pixel Matching](#pixelmatchingdouble-tolerance--005) `PixelMatching({bool ignoreAlpha = true, double tolerance = 0.05})`
+- [Euclidean Color Distance](#euclideancolordistance) `EuclideanColorDistance({bool ignoreAlpha = true})`
 - [IMage Euclidean Distance](#imeddouble-sigma--1-double-blurratio--0005) `IMED({double sigma = 1, double blurRatio = 0.005})`
 
 **Histogram Comparison Algorithms**
-- [Chi Square Distance](#chisquaredistancehistogram) `ChiSquareDistanceHistogram()`
-- [Intersection](#intersectionhistogram) `IntersectionHistogram()`
+- [Chi Square Distance](#chisquaredistancehistogram) `ChiSquareDistanceHistogram({bool ignoreAlpha = true})`
+- [Intersection](#intersectionhistogram) `IntersectionHistogram({bool ignoreAlpha = true})`
 
 **Hashing Comparison Algorithms**
 - [Perceptual](#perceptualhash) `PerceptualHash()`
