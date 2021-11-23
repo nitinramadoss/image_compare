@@ -6,9 +6,9 @@
 
 ## What's New?
  - Handle transparency with the alpha channel option
-    - Set `ignoreAlpha` to `false` to account for alpha 
+    - Set `ignoreAlpha` to `true` to ignore alpha channel
     - Available for EuclideanColorDistance, PixelMatching, and the histogram algorithms 
-    - Example: `PixelMatching(ignoreAlpha: false);`
+    - Example: `PixelMatching(ignoreAlpha: true);`
   
 ## Dependency
 Add to pubspec.yaml

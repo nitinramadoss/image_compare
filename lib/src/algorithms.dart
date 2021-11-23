@@ -99,7 +99,7 @@ class EuclideanColorDistance extends DirectAlgorithm {
   /// Ignores alpha channel when computing difference
   var ignoreAlpha;
 
-  EuclideanColorDistance({bool this.ignoreAlpha = true});
+  EuclideanColorDistance({bool this.ignoreAlpha = false});
 
   /// Computes euclidean color distance between two images
   /// of the same size
@@ -167,7 +167,7 @@ class PixelMatching extends DirectAlgorithm {
   /// (0.05 * 256) of another RGB value.
   var tolerance;
 
-  PixelMatching({bool this.ignoreAlpha = true, this.tolerance = 0.05});
+  PixelMatching({bool this.ignoreAlpha = false, this.tolerance = 0.05});
 
   /// Computes overlap between two images's color intensities.
   /// Return value is the fraction similarity e.g. 0.1 means 10%
@@ -676,7 +676,7 @@ class ChiSquareDistanceHistogram extends HistogramAlgorithm {
   /// Ignores alpha channel when computing difference
   var ignoreAlpha;
 
-  ChiSquareDistanceHistogram({bool this.ignoreAlpha = true});
+  ChiSquareDistanceHistogram({bool this.ignoreAlpha = false});
 
   /// Calculates histogram similarity using chi-squared distance
   @override
@@ -738,7 +738,7 @@ class IntersectionHistogram extends HistogramAlgorithm {
   /// Ignores alpha channel when computing difference
   var ignoreAlpha;
 
-  IntersectionHistogram({bool this.ignoreAlpha = true});
+  IntersectionHistogram({bool this.ignoreAlpha = false});
 
   /// Calculates histogram similarity using standard intersection
   @override
