@@ -111,6 +111,7 @@ var results = await listCompare(target: a, list: [a, b], algorithm: IMED(blurRat
  - Images are resized to the same dimensions (if dimensions don't match) and are grayscaled. A gaussian blur is applied when calculating distance between pixel intensities. Spatial relationship is taken into account within the gaussian function to reduce the effect of minor perturbations (ignores minor differences). 
  - Gaussian blur has been modified: area decreased (Note)
  - Best with images of similar aspect ratios and dimensions
+ - Does not handle transparent pixels
  - Compare for ~exactness (if two images are roughly identical)
 
 #### Result
@@ -143,6 +144,7 @@ var results = await listCompare(target: a, list: [a, b], algorithm: IMED(blurRat
 - Images are grayscaled and resized to 32x32. Then they are passed through a 1-dimension discrete cosine transformation.
 - The top 8x8 is only accounted for since it gives the generalized frequency of the image. With this, a hash is created.
 - This algorithm works great for images as described by phash.org "copyright protection, similarity search for media files, or even digital forensics". From our testing we also found it works great with pictures that have subjects inside and minimal white space.
+- Does not handle transparent pixels
 - Compare for exactness (if two images are identical)
 
 #### Result
@@ -155,6 +157,7 @@ var results = await listCompare(target: a, list: [a, b], algorithm: IMED(blurRat
 - Images are resized to 8x8 and grayscaled.
 - Works by taking the average of all the grayscaled pixels and cross checking with the actual intensity value of the pixel.
 - The hash produced by this process is used in the hamming distance function.
+- Does not handle transparent pixels
 - Compare for exactness (if two images are identical)
 
 #### Result
@@ -168,6 +171,7 @@ var results = await listCompare(target: a, list: [a, b], algorithm: IMED(blurRat
 - Works by taking the median of all the grayscaled pixels and cross checking with the actual intensity value of the pixel.
 - Conceptually similar to average hash except uses median.
 - The hash produced by this process is used in the hamming distance function.
+- Does not handle transparent pixels
 - Compare for exactness (if two images are identical)
 #### Result
 - Structural difference between median grayscale distributions after hashing of two images

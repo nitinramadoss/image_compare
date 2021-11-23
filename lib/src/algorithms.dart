@@ -225,6 +225,7 @@ class PixelMatching extends DirectAlgorithm {
 ///
 /// * Best with images of similar aspect ratios and dimensions
 /// * Compare for ~exactness (if two images are roughly identical)
+/// * Does not handle transparent pixels
 /// * Returns percentage difference (0.0 - no difference, 1.0 - 100% difference)
 class IMED extends DirectAlgorithm {
   /// Width parameter of the guassian function
@@ -365,6 +366,7 @@ abstract class HashAlgorithm extends Algorithm {
 /// * Works well with images of any dimension and aspect ratio
 /// * Comparing image fingerprints
 /// * Images can be rotated
+/// * Does not handle transparent pixels
 /// * Returns percentage diffence (0.0 - no difference, 1.0 - 100% difference)
 class PerceptualHash extends HashAlgorithm {
   final int _size = 32;
@@ -501,6 +503,7 @@ class PerceptualHash extends HashAlgorithm {
 /// * Work well with images of any dimension and aspect ratio
 /// * Comparing image fingerprints
 /// * Images can be rotated
+/// * Does not handle transparent pixels
 /// * Returns percentage diffence (0.0 - no difference, 1.0 - 100% difference)
 class AverageHash extends HashAlgorithm {
   @override
@@ -550,6 +553,7 @@ class AverageHash extends HashAlgorithm {
 /// * Works well with images of any dimension and aspect ratio
 /// * Comparing image fingerprints
 /// * Images can be rotated
+/// * Does not handle transparent pixels
 /// * Returns percentage diffence (0.0 - no difference, 1.0 - 100% difference)
 class MedianHash extends HashAlgorithm {
   @override
