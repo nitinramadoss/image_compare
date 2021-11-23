@@ -89,12 +89,4 @@ void main(List<String> arguments) async {
   );
 
   assetResults.forEach((e) => print('Difference: ${e * 100}%'));
-
-
-  // var file3 = File("images/objects/black.png");
-  // var file4 = File("images/objects/white.png");
-
-  //  var rs =
-  //     await compareImages(src1: file3, src2: file4);
-
 }
