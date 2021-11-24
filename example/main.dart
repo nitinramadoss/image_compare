@@ -42,7 +42,7 @@ void main(List<String> arguments) async {
 
   // Calculate IMED between two asset images
   var assetResult = await compareImages(
-      src1: file1, src2: file2, algorithm: IMED(blurRatio: 0.001));
+      src1: image1, src2: image2, algorithm: IMED(blurRatio: 0.001));
 
   print('Difference: ${assetResult * 100}%');
 
@@ -54,13 +54,13 @@ void main(List<String> arguments) async {
 
   // Calculate euclidean color distance between two images
   var imageResult = await compareImages(
-      src1: image1, src2: image2, algorithm: EuclideanColorDistance());
+      src1: file1, src2: file2, algorithm: EuclideanColorDistance(ignoreAlpha: true));
 
   print('Difference: ${imageResult * 100}%');
 
   // Calculate pixel matching between one network and one asset image
   var networkAssetResult =
-      await compareImages(src1: Uri.parse(url2), src2: file1);
+      await compareImages(src1: Uri.parse(url2), src2: image2, algorithm: PixelMatching(tolerance: 0.1));
 
   print('Difference: ${networkAssetResult * 100}%');
 

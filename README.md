@@ -4,6 +4,12 @@
 
 ![image1](https://github.com/nitinramadoss/image_compare/blob/main/images/seven2.PNG) ![image2](https://github.com/nitinramadoss/image_compare/blob/main/images/seven.PNG)
 
+## What's New?
+ - Handle transparency with the alpha channel option
+    - Set `ignoreAlpha` to `true` to ignore alpha channel
+    - Available for EuclideanColorDistance, PixelMatching, and the histogram algorithms 
+    - Example: `PixelMatching(ignoreAlpha: true);`
+  
 ## Dependency
 Add to pubspec.yaml
 ```
@@ -18,13 +24,13 @@ import 'package:image_compare/image_compare.dart';
 
 ## Classes:
 **Pixel Comparison Algorithms**
-- [Pixel Matching](#pixelmatchingdouble-tolerance--005) `PixelMatching({double tolerance = 0.05})`
-- [Euclidean Color Distance](#euclideancolordistance) `EuclideanColorDistance()`
+- [Pixel Matching](#pixelmatchingdouble-tolerance--005) `PixelMatching({bool ignoreAlpha = true, double tolerance = 0.05})`
+- [Euclidean Color Distance](#euclideancolordistance) `EuclideanColorDistance({bool ignoreAlpha = true})`
 - [IMage Euclidean Distance](#imeddouble-sigma--1-double-blurratio--0005) `IMED({double sigma = 1, double blurRatio = 0.005})`
 
 **Histogram Comparison Algorithms**
-- [Chi Square Distance](#chisquaredistancehistogram) `ChiSquareDistanceHistogram()`
-- [Intersection](#intersectionhistogram) `IntersectionHistogram()`
+- [Chi Square Distance](#chisquaredistancehistogram) `ChiSquareDistanceHistogram({bool ignoreAlpha = true})`
+- [Intersection](#intersectionhistogram) `IntersectionHistogram({bool ignoreAlpha = true})`
 
 **Hashing Comparison Algorithms**
 - [Perceptual](#perceptualhash) `PerceptualHash()`
@@ -105,6 +111,7 @@ var results = await listCompare(target: a, list: [a, b], algorithm: IMED(blurRat
  - Images are resized to the same dimensions (if dimensions don't match) and are grayscaled. A gaussian blur is applied when calculating distance between pixel intensities. Spatial relationship is taken into account within the gaussian function to reduce the effect of minor perturbations (ignores minor differences). 
  - Gaussian blur has been modified: area decreased (Note)
  - Best with images of similar aspect ratios and dimensions
+ - Does not handle transparent pixels
  - Compare for ~exactness (if two images are roughly identical)
 
 #### Result
@@ -113,7 +120,7 @@ var results = await listCompare(target: a, list: [a, b], algorithm: IMED(blurRat
 ### `ChiSquareDistanceHistogram()`
 
 #### About
- - Images are converted to histogram representations (x-axis intensity, y-axis frequency). The chi-square distance formula is applied to compute the distance between each of the 256 bins. There are three histograms per image (RGB histograms).  
+ - Images are converted to histogram representations (x-axis intensity, y-axis frequency). The chi-square distance formula is applied to compute the distance between each of the 256 bins. There are four histograms per image (RGBA histograms).  
  - Works with images of all aspect ratios and dimensions
  - Compare for similarity (if two images are similar based on their color distribution)
 
@@ -123,7 +130,7 @@ var results = await listCompare(target: a, list: [a, b], algorithm: IMED(blurRat
 ### `IntersectionHistogram()`
 
 #### About
- - Images are converted to histogram representations (x-axis intensity, y-axis frequency). Histograms are overlaid to calculate percentage overlap. There are three histograms per image (RGB histograms).  
+ - Images are converted to histogram representations (x-axis intensity, y-axis frequency). Histograms are overlaid to calculate percentage overlap. There are four histograms per image (RGBA histograms).  
  - Works with images of all aspect ratios and dimensions
  - Compare for similarity (if two images are similar based on their color distribution)
 
@@ -137,6 +144,7 @@ var results = await listCompare(target: a, list: [a, b], algorithm: IMED(blurRat
 - Images are grayscaled and resized to 32x32. Then they are passed through a 1-dimension discrete cosine transformation.
 - The top 8x8 is only accounted for since it gives the generalized frequency of the image. With this, a hash is created.
 - This algorithm works great for images as described by phash.org "copyright protection, similarity search for media files, or even digital forensics". From our testing we also found it works great with pictures that have subjects inside and minimal white space.
+- Does not handle transparent pixels
 - Compare for exactness (if two images are identical)
 
 #### Result
@@ -149,6 +157,7 @@ var results = await listCompare(target: a, list: [a, b], algorithm: IMED(blurRat
 - Images are resized to 8x8 and grayscaled.
 - Works by taking the average of all the grayscaled pixels and cross checking with the actual intensity value of the pixel.
 - The hash produced by this process is used in the hamming distance function.
+- Does not handle transparent pixels
 - Compare for exactness (if two images are identical)
 
 #### Result
@@ -162,6 +171,7 @@ var results = await listCompare(target: a, list: [a, b], algorithm: IMED(blurRat
 - Works by taking the median of all the grayscaled pixels and cross checking with the actual intensity value of the pixel.
 - Conceptually similar to average hash except uses median.
 - The hash produced by this process is used in the hamming distance function.
+- Does not handle transparent pixels
 - Compare for exactness (if two images are identical)
 #### Result
 - Structural difference between median grayscale distributions after hashing of two images

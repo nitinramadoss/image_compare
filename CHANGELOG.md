@@ -1,3 +1,7 @@
+## 1.1.2
+
+- Handle transparency with alpha channel option
+
 ## 1.1.1
 
 - Web support with universal_io
