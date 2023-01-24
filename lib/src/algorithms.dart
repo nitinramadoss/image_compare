@@ -1,4 +1,5 @@
 import 'dart:math';
+
 import 'package:image/image.dart';
 
 /// Abstract class for all algorithms
@@ -309,7 +310,7 @@ class IMED extends DirectAlgorithm {
   }
 
   /// Helper function to return grayscale value of a pixel
-  int _grayValue(Pixel p) {
+  num _grayValue(Pixel p) {
     return getLuminanceRgb(p._red, p._green, p._blue);
   }
 
@@ -660,7 +661,7 @@ class RGBAHistogram {
     redHist = List.filled(_binSize, 0.0);
     greenHist = List.filled(_binSize, 0.0);
     blueHist = List.filled(_binSize, 0.0);
-    alphaHist = List.filled(_binSize, 0.0); 
+    alphaHist = List.filled(_binSize, 0.0);
   }
 }
 
@@ -694,7 +695,7 @@ class ChiSquareDistanceHistogram extends HistogramAlgorithm {
 
     sum += _diff(_histograms._first.redHist, _histograms._second.redHist) +
         _diff(_histograms._first.greenHist, _histograms._second.greenHist) +
-        _diff(_histograms._first.blueHist, _histograms._second.blueHist) + 
+        _diff(_histograms._first.blueHist, _histograms._second.blueHist) +
         (alphaBit * _diff(_histograms._first.alphaHist, _histograms._second.alphaHist));
 
     return sum / (3 + alphaBit);
@@ -756,7 +757,7 @@ class IntersectionHistogram extends HistogramAlgorithm {
 
     sum += _diff(_histograms._first.redHist, _histograms._second.redHist) +
         _diff(_histograms._first.greenHist, _histograms._second.greenHist) +
-        _diff(_histograms._first.blueHist, _histograms._second.blueHist) + 
+        _diff(_histograms._first.blueHist, _histograms._second.blueHist) +
         (alphaBit * _diff(_histograms._first.alphaHist, _histograms._second.alphaHist));
 
     return 1 - (sum / (3 + alphaBit));
