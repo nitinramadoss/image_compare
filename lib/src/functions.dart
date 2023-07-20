@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'algorithms.dart';
 import 'package:image/image.dart';
 import 'package:universal_io/io.dart';
@@ -90,7 +91,7 @@ Future<Image> _getImageFromDynamic(var src) async {
   } else if (src is Image) {
     err += '$src. $src.data.length != width * height';
 
-    if (src.height * src.width != src.data.length) {
+    if (src.height * src.width != (src.data?.length??0)) {
       throw FormatException(err);
     }
 
@@ -111,7 +112,7 @@ Future<Image> _getImageFromDynamic(var src) async {
 Image _getValidImage(List<int> bytes, String err) {
   var image;
   try {
-    image = decodeImage(bytes);
+    image = decodeImage(Uint8List.fromList(bytes));
   } catch (Exception) {
     throw FormatException("Insufficient data provided to identify image.");
   }
