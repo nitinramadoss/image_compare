@@ -310,7 +310,7 @@ class IMED extends DirectAlgorithm {
 
   /// Helper function to return grayscale value of a pixel
   int _grayValue(Pixel p) {
-    return getLuminanceRgb(p._red, p._green, p._blue);
+    return getLuminanceRgb(p._red, p._green, p._blue).round();
   }
 
   /// Helper function to return distance between two pixels at
