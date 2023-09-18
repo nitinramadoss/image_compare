@@ -115,7 +115,7 @@ Image _getValidImage(List<int> bytes, String err) {
   Image? image;
   try {
     image = decodeImage(Uint8List.fromList(bytes));
-  } catch (Exception) {
+  } catch (e) {
     throw FormatException("Insufficient data provided to identify image.");
   }
 
