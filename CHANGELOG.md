@@ -1,3 +1,7 @@
+## 1.1.5
+
+- took care of some lints
+
 ## 1.1.4
 
 - upgraded image dependency and formatted dart
