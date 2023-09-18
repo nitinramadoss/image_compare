@@ -193,10 +193,10 @@ class PixelMatching extends DirectAlgorithm {
           _withinRange(delta, _pixelListPair._first[i]._green,
               _pixelListPair._second[i]._green)) {
         if (ignoreAlpha ||
-              _withinRange(delta, _pixelListPair._first[i]._alpha,
-                  _pixelListPair._second[i]._alpha)) {
-                    count++;
-                  }
+            _withinRange(delta, _pixelListPair._first[i]._alpha,
+                _pixelListPair._second[i]._alpha)) {
+          count++;
+        }
       }
     }
 
@@ -660,7 +660,7 @@ class RGBAHistogram {
     redHist = List.filled(_binSize, 0.0);
     greenHist = List.filled(_binSize, 0.0);
     blueHist = List.filled(_binSize, 0.0);
-    alphaHist = List.filled(_binSize, 0.0); 
+    alphaHist = List.filled(_binSize, 0.0);
   }
 }
 
@@ -694,8 +694,9 @@ class ChiSquareDistanceHistogram extends HistogramAlgorithm {
 
     sum += _diff(_histograms._first.redHist, _histograms._second.redHist) +
         _diff(_histograms._first.greenHist, _histograms._second.greenHist) +
-        _diff(_histograms._first.blueHist, _histograms._second.blueHist) + 
-        (alphaBit * _diff(_histograms._first.alphaHist, _histograms._second.alphaHist));
+        _diff(_histograms._first.blueHist, _histograms._second.blueHist) +
+        (alphaBit *
+            _diff(_histograms._first.alphaHist, _histograms._second.alphaHist));
 
     return sum / (3 + alphaBit);
   }
@@ -756,8 +757,9 @@ class IntersectionHistogram extends HistogramAlgorithm {
 
     sum += _diff(_histograms._first.redHist, _histograms._second.redHist) +
         _diff(_histograms._first.greenHist, _histograms._second.greenHist) +
-        _diff(_histograms._first.blueHist, _histograms._second.blueHist) + 
-        (alphaBit * _diff(_histograms._first.alphaHist, _histograms._second.alphaHist));
+        _diff(_histograms._first.blueHist, _histograms._second.blueHist) +
+        (alphaBit *
+            _diff(_histograms._first.alphaHist, _histograms._second.alphaHist));
 
     return 1 - (sum / (3 + alphaBit));
   }

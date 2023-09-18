@@ -54,13 +54,17 @@ void main(List<String> arguments) async {
 
   // Calculate euclidean color distance between two images
   var imageResult = await compareImages(
-      src1: file1, src2: file2, algorithm: EuclideanColorDistance(ignoreAlpha: true));
+      src1: file1,
+      src2: file2,
+      algorithm: EuclideanColorDistance(ignoreAlpha: true));
 
   print('Difference: ${imageResult * 100}%');
 
   // Calculate pixel matching between one network and one asset image
-  var networkAssetResult =
-      await compareImages(src1: Uri.parse(url2), src2: image2, algorithm: PixelMatching(tolerance: 0.1));
+  var networkAssetResult = await compareImages(
+      src1: Uri.parse(url2),
+      src2: image2,
+      algorithm: PixelMatching(tolerance: 0.1));
 
   print('Difference: ${networkAssetResult * 100}%');
 

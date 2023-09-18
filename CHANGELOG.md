@@ -1,3 +1,7 @@
+## 1.1.4
+
+- upgraded image dependency and formatted dart
+
 ## 1.1.3
 
 - forked as image_compare_2 with up to date dependencies and running example
