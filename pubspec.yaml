@@ -1,7 +1,7 @@
 name: image_compare_2
 description: Package maintained based on image_compare. Compare images using a variety of algorithms.
 repository: https://github.com/lcuis/image_compare
-version: 1.1.5
+version: 1.1.6
 
 environment:
   sdk: ">=2.12.0 <4.0.0"

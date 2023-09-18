@@ -1,3 +1,7 @@
+## 1.1.6
+
+- took care of some lints
+
 ## 1.1.5
 
 - took care of some lints

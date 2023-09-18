@@ -15,8 +15,8 @@ import 'package:universal_io/io.dart';
 /// * [List]- list of integers (bytes representing the image)
 /// * [Image] - image buffer (Image class)
 Future<double> compareImages({
-  required var src1,
-  required var src2,
+  required dynamic src1,
+  required dynamic src2,
   Algorithm? algorithm,
 }) async {
   algorithm ??= PixelMatching(); // default algorithm
@@ -49,7 +49,7 @@ Future<double> compareImages({
 /// * [List]- list of integers (bytes representing the image)
 /// * [Image] - image buffer (Image class)
 Future<List<double>> listCompare({
-  required var target,
+  required dynamic target,
   required List<dynamic> list,
   Algorithm? algorithm,
 }) async {
@@ -65,7 +65,7 @@ Future<List<double>> listCompare({
   return results;
 }
 
-Future<Image> _getImageFromDynamic(var src) async {
+Future<Image> _getImageFromDynamic(dynamic src) async {
   // Error message if image format can't be identified
   var err = 'A valid image could not be identified from ';
   var bytes = <int>[];
@@ -112,7 +112,7 @@ Future<Image> _getImageFromDynamic(var src) async {
 /// of bytes format and return [Image].
 /// Throws exception if format is invalid.
 Image _getValidImage(List<int> bytes, String err) {
-  var image;
+  Image? image;
   try {
     image = decodeImage(Uint8List.fromList(bytes));
   } catch (Exception) {

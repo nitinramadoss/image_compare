@@ -650,7 +650,7 @@ abstract class HistogramAlgorithm extends Algorithm {
 /// Organizational class for storing [src1] and [src2] data.
 /// Fields are RGBA histograms (256 element lists)
 class RGBAHistogram {
-  final _binSize;
+  final int _binSize;
   late List redHist;
   late List greenHist;
   late List blueHist;
