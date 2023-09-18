@@ -4,7 +4,13 @@
 
 ![image1](https://github.com/nitinramadoss/image_compare/blob/main/images/seven2.PNG) ![image2](https://github.com/nitinramadoss/image_compare/blob/main/images/seven.PNG)
 
-## What's New?
+## Why image_compare_2 instead of image_compare?
+
+As a dependency, the great image_compare package was breaking some requirements and updates were not being published.
+Thus, it has been updated as image_compare_2.
+If image_compare ever becomes more up to date than image_compare_2, please prefer image_compare as it is the original package.
+
+## What was New?
  - Handle transparency with the alpha channel option
     - Set `ignoreAlpha` to `true` to ignore alpha channel
     - Available for EuclideanColorDistance, PixelMatching, and the histogram algorithms 
@@ -14,12 +20,12 @@
 Add to pubspec.yaml
 ```
 dependencies:
-  image_compare: ^1.1.1
+  image_compare_2: ^1.1.3
 ```
 
 Import:
 ```
-import 'package:image_compare/image_compare.dart';
+import 'package:image_compare_2/image_compare.dart';
 ```
 
 ## Classes:
@@ -51,8 +57,8 @@ var b = Uri.parse('https://hs.sbcounty.gov/cn/Photo%20Gallery/Sample%20Picture%2
 ```
 File example:
 ```
-var a = File('../images/tiger.jpg');
-var b = File('../images/leopard.png');
+var a = File('images/tiger.jpg');
+var b = File('images/leopard.png');
 ```
 Bytes example:
 ```

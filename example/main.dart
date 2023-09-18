@@ -1,26 +1,26 @@
 import 'dart:io';
 import 'package:image/image.dart';
-import 'package:image_compare/image_compare.dart';
+import 'package:image_compare_2/image_compare_2.dart';
 
 void main(List<String> arguments) async {
   var url1 =
-      'https://www.tompetty.com/sites/g/files/g2000007521/f/sample_01.jpg';
+      'https://www.tompetty.com/sites/g/files/g2000014681/files/2022-06/TP%2520skateboard%25205.14.jpg';
   var url2 =
       'https://fujifilm-x.com/wp-content/uploads/2019/08/x-t30_sample-images03.jpg';
 
-  var file1 = File('../images/drawings/kolam1.png');
-  var file2 = File('../images/drawings/scribble1.png');
+  var file1 = File('images/drawings/kolam1.png');
+  var file2 = File('images/drawings/scribble1.png');
 
-  var bytes1 = File('../images/animals/koala.jpg').readAsBytesSync();
-  var bytes2 = File('../images/animals/komodo.jpg').readAsBytesSync();
+  var bytes1 = File('images/animals/koala.jpg').readAsBytesSync();
+  var bytes2 = File('images/animals/komodo.jpg').readAsBytesSync();
 
   var image1 = decodeImage(bytes1);
   var image2 = decodeImage(bytes2);
 
   var assetImages = [
-    File('../images/animals/bunny.jpg'),
-    File('../images/objects/red_apple.png'),
-    File('../images/animals/tiger.jpg')
+    File('images/animals/bunny.jpg'),
+    File('images/objects/red_apple.png'),
+    File('images/animals/tiger.jpg')
   ];
 
   var networkImages = [

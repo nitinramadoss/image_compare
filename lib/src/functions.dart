@@ -91,7 +91,7 @@ Future<Image> _getImageFromDynamic(var src) async {
   } else if (src is Image) {
     err += '$src. $src.data.length != width * height';
 
-    if (src.height * src.width != (src.data?.length??0)) {
+    if (src.height * src.width != (src.data.length)) {
       throw FormatException(err);
     }
 
