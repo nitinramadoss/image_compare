@@ -25,7 +25,7 @@ dependencies:
 
 Import:
 ```
-import 'package:image_compare_2/image_compare.dart';
+import 'package:image_compare_2/image_compare_2.dart';
 ```
 
 ## Classes:
