@@ -1,3 +1,23 @@
+## 1.1.7
+
+- took care of some lints
+
+## 1.1.6
+
+- took care of some lints
+
+## 1.1.5
+
+- took care of some lints
+
+## 1.1.4
+
+- upgraded image dependency and formatted dart
+
+## 1.1.3
+
+- forked as image_compare_2 with up to date dependencies and running example
+
 ## 1.1.2
 
 - Handle transparency with alpha channel option

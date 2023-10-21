@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'algorithms.dart';
 import 'package:image/image.dart';
 import 'package:universal_io/io.dart';
@@ -14,8 +15,8 @@ import 'package:universal_io/io.dart';
 /// * [List]- list of integers (bytes representing the image)
 /// * [Image] - image buffer (Image class)
 Future<double> compareImages({
-  required var src1,
-  required var src2,
+  required dynamic src1,
+  required dynamic src2,
   Algorithm? algorithm,
 }) async {
   algorithm ??= PixelMatching(); // default algorithm
@@ -48,7 +49,7 @@ Future<double> compareImages({
 /// * [List]- list of integers (bytes representing the image)
 /// * [Image] - image buffer (Image class)
 Future<List<double>> listCompare({
-  required var target,
+  required dynamic target,
   required List<dynamic> list,
   Algorithm? algorithm,
 }) async {
@@ -64,7 +65,7 @@ Future<List<double>> listCompare({
   return results;
 }
 
-Future<Image> _getImageFromDynamic(var src) async {
+Future<Image> _getImageFromDynamic(dynamic src) async {
   // Error message if image format can't be identified
   var err = 'A valid image could not be identified from ';
   var bytes = <int>[];
@@ -88,9 +89,11 @@ Future<Image> _getImageFromDynamic(var src) async {
 
     err += '$list<...>';
   } else if (src is Image) {
-    err += '$src. $src.data.length != width * height';
+    err +=
+        '${src.width}x${src.height}!=${src.data?.length ?? 0} length != width * height';
 
-    if (src.height * src.width != src.data.length) {
+    if (src.height * src.width != (src.data?.length ?? 0) &&
+        src.height * src.width * 3 != (src.data?.length ?? 0)) {
       throw FormatException(err);
     }
 
@@ -109,10 +112,10 @@ Future<Image> _getImageFromDynamic(var src) async {
 /// of bytes format and return [Image].
 /// Throws exception if format is invalid.
 Image _getValidImage(List<int> bytes, String err) {
-  var image;
+  Image? image;
   try {
-    image = decodeImage(bytes);
-  } catch (Exception) {
+    image = decodeImage(Uint8List.fromList(bytes));
+  } catch (e) {
     throw FormatException("Insufficient data provided to identify image.");
   }
 
