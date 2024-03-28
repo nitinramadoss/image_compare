@@ -8,19 +8,19 @@ void main(List<String> arguments) async {
   var url2 =
       'https://fujifilm-x.com/wp-content/uploads/2019/08/x-t30_sample-images03.jpg';
 
-  var file1 = File('../images/drawings/kolam1.png');
-  var file2 = File('../images/drawings/scribble1.png');
+  var file1 = File('images/drawings/kolam1.png');
+  var file2 = File('images/drawings/scribble1.png');
 
-  var bytes1 = File('../images/animals/koala.jpg').readAsBytesSync();
-  var bytes2 = File('../images/animals/komodo.jpg').readAsBytesSync();
+  var bytes1 = File('images/animals/koala.jpg').readAsBytesSync();
+  var bytes2 = File('images/animals/komodo.jpg').readAsBytesSync();
 
   var image1 = decodeImage(bytes1);
   var image2 = decodeImage(bytes2);
 
   var assetImages = [
-    File('../images/animals/bunny.jpg'),
-    File('../images/objects/red_apple.png'),
-    File('../images/animals/tiger.jpg')
+    File('images/animals/bunny.jpg'),
+    File('images/objects/red_apple.png'),
+    File('images/animals/tiger.jpg')
   ];
 
   var networkImages = [
@@ -83,7 +83,7 @@ void main(List<String> arguments) async {
   // Calculate perceptual hash difference between an asset image
   // and a list of asset iamges
   var assetResults = await listCompare(
-    target: File('../images/animals/deer.jpg'),
+    target: File('images/animals/deer.jpg'),
     list: assetImages,
     algorithm: PerceptualHash(),
   );
