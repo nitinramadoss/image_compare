@@ -38,37 +38,37 @@ void main(List<String> arguments) async {
       src2: Uri.parse(url2),
       algorithm: ChiSquareDistanceHistogram());
 
-  print('Difference: ${networkResult * 100}%');
+  print('Difference of network images with Chi Square: ${networkResult * 100}%');
 
   // Calculate IMED between two asset images
   var assetResult = await compareImages(
       src1: image1, src2: image2, algorithm: IMED(blurRatio: 0.001));
 
-  print('Difference: ${assetResult * 100}%');
+  print('Difference of asset images with IMED: ${assetResult * 100}%');
 
   // Calculate intersection histogram difference between two bytes of images
   var byteResult = await compareImages(
       src1: bytes1, src2: bytes2, algorithm: IntersectionHistogram());
 
-  print('Difference: ${byteResult * 100}%');
+  print('Difference of byte images with Intersection Histogram: ${byteResult * 100}%');
 
   // Calculate euclidean color distance between two images
   var imageResult = await compareImages(
       src1: file1, src2: file2, algorithm: EuclideanColorDistance(ignoreAlpha: true));
 
-  print('Difference: ${imageResult * 100}%');
+  print('Difference of image files with Euclidean Color Distance: ${imageResult * 100}%');
 
   // Calculate pixel matching between one network and one asset image
   var networkAssetResult =
       await compareImages(src1: Uri.parse(url2), src2: image2, algorithm: PixelMatching(tolerance: 0.1));
 
-  print('Difference: ${networkAssetResult * 100}%');
+  print('Difference of network and asset images with Pixel Matching: ${networkAssetResult * 100}%');
 
   // Calculate median hash between a byte array and image
   var byteImageResult =
       await compareImages(src1: image1, src2: bytes2, algorithm: MedianHash());
 
-  print('Difference: ${byteImageResult * 100}%');
+  print('Difference of byte image and image with Median Hash: ${byteImageResult * 100}%');
 
   // Calculate average hash difference between a network image
   // and a list of network images
@@ -78,7 +78,7 @@ void main(List<String> arguments) async {
     algorithm: AverageHash(),
   );
 
-  networkResults.forEach((e) => print('Difference: ${e * 100}%'));
+  networkResults.forEach((e) => print('Difference of network images with Average Hash: ${e * 100}%'));
 
   // Calculate perceptual hash difference between an asset image
   // and a list of asset iamges
@@ -88,5 +88,5 @@ void main(List<String> arguments) async {
     algorithm: PerceptualHash(),
   );
 
-  assetResults.forEach((e) => print('Difference: ${e * 100}%'));
+  assetResults.forEach((e) => print('Difference of asset images with Perceptual Hash: ${e * 100}%'));
 }
