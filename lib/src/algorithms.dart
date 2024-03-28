@@ -4,7 +4,7 @@ import 'package:image/image.dart';
 /// Abstract class for all algorithms
 abstract class Algorithm {
   /// [Pair] of [Pixel] lists for [src1] and [src2]
-  var _pixelListPair;
+  Pair _pixelListPair = Pair([], []);
 
   /// Default constructor gets implicitly called on subclass instantiation
   Algorithm();
@@ -97,7 +97,7 @@ abstract class DirectAlgorithm extends Algorithm {
 /// * Returns percentage difference (0.0 - no difference, 1.0 - 100% difference)
 class EuclideanColorDistance extends DirectAlgorithm {
   /// Ignores alpha channel when computing difference
-  var ignoreAlpha;
+  bool ignoreAlpha;
 
   EuclideanColorDistance({bool this.ignoreAlpha = false});
 
@@ -157,7 +157,7 @@ class EuclideanColorDistance extends DirectAlgorithm {
 /// * Returns percentage diffence (0.0 - no difference, 1.0 - 100% difference)
 class PixelMatching extends DirectAlgorithm {
   /// Ignores alpha channel when computing difference
-  var ignoreAlpha;
+  bool ignoreAlpha;
 
   /// Percentage tolerance value between 0.0 and 1.0
   /// of the range of RGB values, 256, used when directly
@@ -165,7 +165,7 @@ class PixelMatching extends DirectAlgorithm {
   ///
   /// A value of 0.05 means that one RGB value can be + or -
   /// (0.05 * 256) of another RGB value.
-  var tolerance;
+  double tolerance;
 
   PixelMatching({bool this.ignoreAlpha = false, this.tolerance = 0.05});
 
@@ -203,7 +203,7 @@ class PixelMatching extends DirectAlgorithm {
     return 1 - (count / numPixels);
   }
 
-  bool _withinRange(var delta, var value, var target) {
+  bool _withinRange(double delta, int value, int target) {
     return (target - delta <= value && value <= target + delta);
   }
 
@@ -229,7 +229,7 @@ class PixelMatching extends DirectAlgorithm {
 /// * Returns percentage difference (0.0 - no difference, 1.0 - 100% difference)
 class IMED extends DirectAlgorithm {
   /// Width parameter of the guassian function
-  var sigma;
+  double sigma;
 
   /// Percentage of the smaller image's width representing a
   /// component of the window (box) width used for the gaussian blur.
@@ -240,7 +240,7 @@ class IMED extends DirectAlgorithm {
   ///
   /// Note: Large [blurRatio] values can lead to a long computation time
   /// for comparisons.
-  var blurRatio;
+  double blurRatio;
 
   IMED({double this.sigma = 1, double this.blurRatio = 0.005});
 
@@ -310,12 +310,12 @@ class IMED extends DirectAlgorithm {
 
   /// Helper function to return grayscale value of a pixel
   int _grayValue(Pixel p) {
-    return getLuminanceRgb(p._red, p._green, p._blue);
+    return getLuminanceRgb(p._red, p._green, p._blue).round();
   }
 
   /// Helper function to return distance between two pixels at
   /// indices [i] and [j]
-  double _distance(var i, var j, var width) {
+  double _distance(int i, int j, int width) {
     var distance = 0.0;
     var pointA = Pair((i % width), (i / width));
     var pointB = Pair((j % width), (j / width));
@@ -650,7 +650,7 @@ abstract class HistogramAlgorithm extends Algorithm {
 /// Organizational class for storing [src1] and [src2] data.
 /// Fields are RGBA histograms (256 element lists)
 class RGBAHistogram {
-  final _binSize;
+  final int _binSize;
   late List redHist;
   late List greenHist;
   late List blueHist;
@@ -678,7 +678,7 @@ class RGBAHistogram {
 /// * Returns percentage difference (0.0 - no difference, 1.0 - 100% difference)
 class ChiSquareDistanceHistogram extends HistogramAlgorithm {
   /// Ignores alpha channel when computing difference
-  var ignoreAlpha;
+  bool ignoreAlpha;
 
   ChiSquareDistanceHistogram({bool this.ignoreAlpha = false});
 
@@ -740,7 +740,7 @@ class ChiSquareDistanceHistogram extends HistogramAlgorithm {
 /// * Returns percentage diffence (0.0 - no difference, 1.0 - 100% difference)
 class IntersectionHistogram extends HistogramAlgorithm {
   /// Ignores alpha channel when computing difference
-  var ignoreAlpha;
+  bool ignoreAlpha;
 
   IntersectionHistogram({bool this.ignoreAlpha = false});
 
