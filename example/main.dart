@@ -4,7 +4,7 @@ import 'package:image_compare/image_compare.dart';
 
 void main(List<String> arguments) async {
   var url1 =
-      'https://www.tompetty.com/sites/g/files/g2000007521/f/sample_01.jpg';
+      'https://cdn.pixabay.com/photo/2018/04/22/19/16/marguerite-daisy-3342050_1280.jpg';
   var url2 =
       'https://fujifilm-x.com/wp-content/uploads/2019/08/x-t30_sample-images03.jpg';
 
@@ -27,7 +27,7 @@ void main(List<String> arguments) async {
     Uri.parse(
         'https://fujifilm-x.com/wp-content/uploads/2019/08/x-t30_sample-images03.jpg'),
     Uri.parse(
-        'https://hs.sbcounty.gov/cn/Photo%20Gallery/Sample%20Picture%20-%20Koala.jpg'),
+        'https://cdn.pixabay.com/photo/2015/07/21/15/19/koala-854021_1280.jpg'),
     Uri.parse(
         'https://c.files.bbci.co.uk/12A9B/production/_111434467_gettyimages-1143489763.jpg'),
   ];
