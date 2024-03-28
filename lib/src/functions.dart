@@ -1,6 +1,7 @@
 import 'algorithms.dart';
 import 'package:image/image.dart';
 import 'package:universal_io/io.dart';
+import 'dart:typed_data';
 
 /// Compare images from [src1] and [src2] with a specified [algorithm].
 /// If [algorithm] is not specified, the default (PixelMatching()) is supplied.
@@ -88,9 +89,17 @@ Future<Image> _getImageFromDynamic(var src) async {
 
     err += '$list<...>';
   } else if (src is Image) {
-    err += '$src. $src.data.length != width * height';
+    // Construct an error message with detailed information about the mismatch.
+    err += 'Expected data length for an image of size ${src.width}x${src.height} is either ${src.width * src.height * 3} (for RGB) or ${src.width * src.height * 4} (for RGBA), but found ${src.data?.length ?? 0}.';
 
-    if (src.height * src.width != src.data.length) {
+    // Calculate the expected data lengths for both RGB and RGBA formats.
+    int expectedLengthRGB = src.width * src.height * 3; // 3 bytes per pixel for RGB
+    int expectedLengthRGBA = src.width * src.height * 4; // 4 bytes per pixel for RGBA
+
+    // Check if the actual data length matches either the RGB or RGBA format.
+    // Throw a FormatException if there is a mismatch.
+    int actualLength = src.data?.length ?? 0;
+    if (actualLength != expectedLengthRGB && actualLength != expectedLengthRGBA) {
       throw FormatException(err);
     }
 
@@ -111,7 +120,8 @@ Future<Image> _getImageFromDynamic(var src) async {
 Image _getValidImage(List<int> bytes, String err) {
   var image;
   try {
-    image = decodeImage(bytes);
+    Uint8List uint8list = Uint8List.fromList(bytes);
+    image = decodeImage(uint8list);
   } catch (Exception) {
     throw FormatException("Insufficient data provided to identify image.");
   }

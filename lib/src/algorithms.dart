@@ -4,7 +4,7 @@ import 'package:image/image.dart';
 /// Abstract class for all algorithms
 abstract class Algorithm {
   /// [Pair] of [Pixel] lists for [src1] and [src2]
-  var _pixelListPair;
+  Pair<List<Pixel>, List<Pixel>> _pixelListPair = Pair([], []);
 
   /// Default constructor gets implicitly called on subclass instantiation
   Algorithm();
@@ -97,7 +97,7 @@ abstract class DirectAlgorithm extends Algorithm {
 /// * Returns percentage difference (0.0 - no difference, 1.0 - 100% difference)
 class EuclideanColorDistance extends DirectAlgorithm {
   /// Ignores alpha channel when computing difference
-  var ignoreAlpha;
+  bool ignoreAlpha;
 
   EuclideanColorDistance({bool this.ignoreAlpha = false});
 
@@ -157,7 +157,7 @@ class EuclideanColorDistance extends DirectAlgorithm {
 /// * Returns percentage diffence (0.0 - no difference, 1.0 - 100% difference)
 class PixelMatching extends DirectAlgorithm {
   /// Ignores alpha channel when computing difference
-  var ignoreAlpha;
+  bool ignoreAlpha;
 
   /// Percentage tolerance value between 0.0 and 1.0
   /// of the range of RGB values, 256, used when directly
@@ -165,7 +165,7 @@ class PixelMatching extends DirectAlgorithm {
   ///
   /// A value of 0.05 means that one RGB value can be + or -
   /// (0.05 * 256) of another RGB value.
-  var tolerance;
+  double tolerance;
 
   PixelMatching({bool this.ignoreAlpha = false, this.tolerance = 0.05});
 
@@ -203,7 +203,7 @@ class PixelMatching extends DirectAlgorithm {
     return 1 - (count / numPixels);
   }
 
-  bool _withinRange(var delta, var value, var target) {
+  bool _withinRange(double delta, int value, int target) {
     return (target - delta <= value && value <= target + delta);
   }
 
@@ -229,7 +229,7 @@ class PixelMatching extends DirectAlgorithm {
 /// * Returns percentage difference (0.0 - no difference, 1.0 - 100% difference)
 class IMED extends DirectAlgorithm {
   /// Width parameter of the guassian function
-  var sigma;
+  double sigma;
 
   /// Percentage of the smaller image's width representing a
   /// component of the window (box) width used for the gaussian blur.
@@ -240,7 +240,7 @@ class IMED extends DirectAlgorithm {
   ///
   /// Note: Large [blurRatio] values can lead to a long computation time
   /// for comparisons.
-  var blurRatio;
+  double blurRatio;
 
   IMED({double this.sigma = 1, double this.blurRatio = 0.005});
 
@@ -310,12 +310,12 @@ class IMED extends DirectAlgorithm {
 
   /// Helper function to return grayscale value of a pixel
   int _grayValue(Pixel p) {
-    return getLuminanceRgb(p._red, p._green, p._blue);
+    return getLuminanceRgb(p._red, p._green, p._blue).round();
   }
 
   /// Helper function to return distance between two pixels at
   /// indices [i] and [j]
-  double _distance(var i, var j, var width) {
+  double _distance(int i, int j, int width) {
     var distance = 0.0;
     var pointA = Pair((i % width), (i / width));
     var pointB = Pair((j % width), (j / width));
@@ -374,10 +374,27 @@ class PerceptualHash extends HashAlgorithm {
   ///Resize and grayscale images
   @override
   double compare(Image src1, Image src2) {
-    src1 = copyResize(src1, height: 32, width: 32);
-    src2 = copyResize(src2, height: 32, width: 32);
 
-    super.compare(src1, src2);
+    src1 = copyResize(grayscale(src1), width: _size, height: _size);
+    src2 = copyResize(grayscale(src2), width: _size, height: _size);
+
+    // Pixel representation of [src1] and [src2]
+    _pixelListPair = Pair([], []);
+
+    // Bytes for [src1] and [src2]
+    List<int> bytes1 = src1.getBytes();
+    List<int> bytes2 = src2.getBytes();
+    final bytesPerPixel = 4;
+
+    for (int i = 0; i <= bytes1.length - bytesPerPixel; i += bytesPerPixel) {
+      _pixelListPair._first
+          .add(Pixel(bytes1[i], bytes1[i + 1], bytes1[i + 2], bytes1[i + 3]));
+    }
+
+    for (int i = 0; i <= bytes2.length - bytesPerPixel; i += bytesPerPixel) {
+      _pixelListPair._second
+          .add(Pixel(bytes2[i], bytes2[i + 1], bytes2[i + 2], bytes2[i + 3]));
+    }
 
     var hash1 = calcPhash(_pixelListPair._first);
     var hash2 = calcPhash(_pixelListPair._second);
@@ -386,70 +403,52 @@ class PerceptualHash extends HashAlgorithm {
   }
 
   /// Helper function which computes a binary hash of a [List] of [Pixel]
-  String calcPhash(List pixelList) {
+  String calcPhash(List<Pixel> pixelList) {
     var bitString = '';
-    var matrix = List<dynamic>.filled(32, 0);
-    var row = List<dynamic>.filled(32, 0);
-    var rows = List<dynamic>.filled(32, 0);
-    var col = List<dynamic>.filled(32, 0);
+    var matrix = List.generate(_size, (_) => List.filled(_size, 0.0));
+    var data = pixelListToMatrix(pixelList);
+    var rows = List.generate(_size, (_) => List.filled(_size, 0.0));
 
-    var data = unit8ListToMatrix(pixelList); //returns a matrix used for DCT
-
+    // Apply DCT on each row
     for (var y = 0; y < _size; y++) {
-      for (var x = 0; x < _size; x++) {
-        var color = data[x][y];
-
-        row[x] = getLuminanceRgb(color._red, color._green, color._blue);
-      }
-
+      var row = List.generate(_size, (x) => getLuminanceRgb(data[x][y]._red, data[x][y]._green, data[x][y]._blue).toDouble());
       rows[y] = calculateDCT(row);
     }
-    for (var x = 0; x < _size; x++) {
-      for (var y = 0; y < _size; y++) {
-        col[y] = rows[y][x];
-      }
 
-      matrix[x] = calculateDCT(col);
+    // Apply DCT on each column of the result from previous step
+    for (var x = 0; x < _size; x++) {
+      var col = List.generate(_size, (y) => rows[y][x]);
+      var colTransformed = calculateDCT(col);
+      for (var y = 0; y < _size; y++) {
+        matrix[y][x] = colTransformed[y];
+      }
     }
 
     // Extract the top 8x8 pixels.
-    var pixels = [];
-
-    for (var y = 0; y < 8; y++) {
-      for (var x = 0; x < 8; x++) {
-        pixels.add(matrix[y][x]);
-      }
-    }
+    var pixels = matrix.expand((i) => i).take(64).toList();
+    var averageValue = average(pixels);
 
     // Calculate hash.
-    var bits = [];
-    var compare = average(pixels);
-
     for (var pixel in pixels) {
-      bits.add(pixel > compare ? 1 : 0);
+      bitString += (pixel > averageValue) ? '1' : '0';
     }
-
-    bits.forEach((element) {
-      bitString += (1 * element).toString();
-    });
 
     return BigInt.parse(bitString, radix: 2).toRadixString(16);
   }
 
   ///Helper funciton to compute the average of an array after dct caclulations
-  num average(List pixels) {
+  num average(List<double> pixels) {
     // Calculate the average value from top 8x8 pixels, except for the first one.
     var n = pixels.length - 1;
     return pixels.sublist(1, n).reduce((a, b) => a + b) / n;
   }
 
   ///Helper function to perform 1D discrete cosine tranformation on a matrix
-  List calculateDCT(List matrix) {
-    var transformed = List<num>.filled(32, 0);
-    var _size = matrix.length;
+  List<double> calculateDCT(List<double> matrix) {
+    var transformed = List<double>.filled(_size, 0.0);
 
     for (var i = 0; i < _size; i++) {
-      num sum = 0;
+      double sum = 0;
 
       for (var j = 0; j < _size; j++) {
         sum += matrix[j] * cos((i * pi * (j + 0.5)) / _size);
@@ -467,25 +466,15 @@ class PerceptualHash extends HashAlgorithm {
     return transformed;
   }
 
-  ///Helper function to convert a Unit8List to a nD matrix
-  List unit8ListToMatrix(List pixelList) {
-    var copy = pixelList.sublist(0);
-    pixelList.clear();
-
-    for (var r = 0; r < _size; r++) {
-      var res = [];
-      for (var c = 0; c < _size; c++) {
-        var i = r * _size + c;
-
-        if (i < copy.length) {
-          res.add(copy[i]);
-        }
-      }
-
-      pixelList.add(res);
+  ///Helper function to convert a list of pixels to a matrix
+  List<List<Pixel>> pixelListToMatrix(List<Pixel> pixelList) {
+    var matrix = List.generate(_size, (_) => List<Pixel>.filled(_size, Pixel(0, 0, 0, 0), growable: false), growable: false);
+    for (var i = 0; i < pixelList.length; i++) {
+      var x = i % _size;
+      var y = i ~/ _size;
+      matrix[y][x] = pixelList[i];
     }
-
-    return pixelList;
+    return matrix;
   }
 
   @override
@@ -650,7 +639,7 @@ abstract class HistogramAlgorithm extends Algorithm {
 /// Organizational class for storing [src1] and [src2] data.
 /// Fields are RGBA histograms (256 element lists)
 class RGBAHistogram {
-  final _binSize;
+  final int _binSize;
   late List redHist;
   late List greenHist;
   late List blueHist;
@@ -678,7 +667,7 @@ class RGBAHistogram {
 /// * Returns percentage difference (0.0 - no difference, 1.0 - 100% difference)
 class ChiSquareDistanceHistogram extends HistogramAlgorithm {
   /// Ignores alpha channel when computing difference
-  var ignoreAlpha;
+  bool ignoreAlpha;
 
   ChiSquareDistanceHistogram({bool this.ignoreAlpha = false});
 
@@ -740,7 +729,7 @@ class ChiSquareDistanceHistogram extends HistogramAlgorithm {
 /// * Returns percentage diffence (0.0 - no difference, 1.0 - 100% difference)
 class IntersectionHistogram extends HistogramAlgorithm {
   /// Ignores alpha channel when computing difference
-  var ignoreAlpha;
+  bool ignoreAlpha;
 
   IntersectionHistogram({bool this.ignoreAlpha = false});
 

@@ -4,30 +4,30 @@ import 'package:image_compare/image_compare.dart';
 
 void main(List<String> arguments) async {
   var url1 =
-      'https://www.tompetty.com/sites/g/files/g2000007521/f/sample_01.jpg';
+      'https://cdn.pixabay.com/photo/2018/04/22/19/16/marguerite-daisy-3342050_1280.jpg';
   var url2 =
       'https://fujifilm-x.com/wp-content/uploads/2019/08/x-t30_sample-images03.jpg';
 
-  var file1 = File('../images/drawings/kolam1.png');
-  var file2 = File('../images/drawings/scribble1.png');
+  var file1 = File('images/drawings/kolam1.png');
+  var file2 = File('images/drawings/scribble1.png');
 
-  var bytes1 = File('../images/animals/koala.jpg').readAsBytesSync();
-  var bytes2 = File('../images/animals/komodo.jpg').readAsBytesSync();
+  var bytes1 = File('images/animals/koala.jpg').readAsBytesSync();
+  var bytes2 = File('images/animals/komodo.jpg').readAsBytesSync();
 
   var image1 = decodeImage(bytes1);
   var image2 = decodeImage(bytes2);
 
   var assetImages = [
-    File('../images/animals/bunny.jpg'),
-    File('../images/objects/red_apple.png'),
-    File('../images/animals/tiger.jpg')
+    File('images/animals/bunny.jpg'),
+    File('images/objects/red_apple.png'),
+    File('images/animals/tiger.jpg')
   ];
 
   var networkImages = [
     Uri.parse(
         'https://fujifilm-x.com/wp-content/uploads/2019/08/x-t30_sample-images03.jpg'),
     Uri.parse(
-        'https://hs.sbcounty.gov/cn/Photo%20Gallery/Sample%20Picture%20-%20Koala.jpg'),
+        'https://cdn.pixabay.com/photo/2015/07/21/15/19/koala-854021_1280.jpg'),
     Uri.parse(
         'https://c.files.bbci.co.uk/12A9B/production/_111434467_gettyimages-1143489763.jpg'),
   ];
@@ -83,7 +83,7 @@ void main(List<String> arguments) async {
   // Calculate perceptual hash difference between an asset image
   // and a list of asset iamges
   var assetResults = await listCompare(
-    target: File('../images/animals/deer.jpg'),
+    target: File('images/animals/deer.jpg'),
     list: assetImages,
     algorithm: PerceptualHash(),
   );
